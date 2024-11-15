@@ -1,7 +1,7 @@
 'use client'
 
 import { usePrivy } from '@privy-io/react-auth'
-import { Button } from "@/components/ui/button"
+import { RainbowButton } from "@/components/ui/rainbow-button"
 import Providers from '@/components/providers'
 
 function HomePage() {
@@ -9,9 +9,9 @@ function HomePage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Button onClick={login} className="px-6 py-3 text-lg font-semibold">
-        Register
-      </Button>
+      <RainbowButton onClick={login} className="px-6 py-3 text-lg font-semibold">
+        Sign In
+      </RainbowButton>
     </div>
   )
 }
