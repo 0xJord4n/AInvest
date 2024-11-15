@@ -174,12 +174,12 @@ export default function InvestmentQuestionnaire() {
           </AnimatePresence>
         </div>
 
-        <div className="w-full px-6 py-8 bg-white bg-opacity-80 backdrop-blur-md">
+        <div className="w-full px-6 py-8 bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 bg-opacity-80 backdrop-blur-md">
           <div className="flex justify-between items-center mb-4">
             <Button 
               onClick={handlePrevious}
               disabled={currentStep === 0}
-              className="px-4 py-2 text-sm bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-full shadow-md transition-all duration-300 disabled:opacity-50"
+              className="px-4 py-2 text-sm bg-white hover:bg-gray-100 text-gray-800 rounded-full shadow-md transition-all duration-300 disabled:opacity-50"
             >
               <ChevronLeft className="w-4 h-4 mr-1" />
               Back
@@ -189,7 +189,7 @@ export default function InvestmentQuestionnaire() {
                 <motion.div
                   key={index}
                   className={`w-2 h-2 rounded-full ${
-                    index === currentStep ? 'bg-blue-500' : 'bg-gray-300'
+                    index === currentStep ? 'bg-blue-500' : 'bg-white'
                   }`}
                   animate={{ scale: index === currentStep ? 1.2 : 1 }}
                   transition={{ duration: 0.3 }}
