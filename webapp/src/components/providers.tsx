@@ -11,7 +11,7 @@ export default function Providers({children}: {children: React.ReactNode}) {
         appearance: {
           theme: 'light',
           accentColor: '#676FFF',
-          logo: 'https://your-logo-url',
+          logo: 'https://github.com/0xJord4n/AInvest/blob/main/webapp/src/public/logo/logo.png?raw=true',
         },
         loginMethods: ['email' ,'wallet', 'google', 'apple', 'twitter'],
         // Create embedded wallets for users who don't have a wallet
