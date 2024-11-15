@@ -13,6 +13,7 @@ export default function Providers({children}: {children: React.ReactNode}) {
           accentColor: '#676FFF',
           logo: 'https://your-logo-url',
         },
+        loginMethods: ['email', 'wallet', 'google', 'apple', 'twitter'],
         // Create embedded wallets for users who don't have a wallet
         embeddedWallets: {
           createOnLogin: 'users-without-wallets',
