@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSwipeable } from 'react-swipeable'
-import { ChevronDown, DollarSign } from 'lucide-react'
+import { ChevronLeft, ChevronRight, DollarSign } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
-import { RainbowButton } from "@/components/ui/rainbow-button"
+import { RainbowButton } from "@/components/ui/rainbow-button-white"
 
 type QuestionComponentProps = {
   value: any;
@@ -22,7 +22,7 @@ const questions: {
     id: 'risk',
     title: 'How much risk are you comfortable with?',
     component: ({ value, onChange }: { value: number, onChange: (value: number) => void }) => (
-      <div className="space-y-8">
+      <div className="space-y-8 w-full">
         <Slider
           value={[value]}
           onValueChange={(values) => onChange(values[0])}
@@ -30,7 +30,7 @@ const questions: {
           step={1}
           className="w-full"
         />
-        <div className="flex justify-between text-lg text-white/80">
+        <div className="flex justify-between text-lg text-gray-600">
           <span>Low Risk</span>
           <span>High Risk</span>
         </div>
@@ -41,13 +41,13 @@ const questions: {
     id: 'frequency',
     title: 'How often do you want to invest?',
     component: ({ value, onChange }: { value: string, onChange: (value: string) => void }) => (
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-4 w-full">
         {['Weekly', 'Monthly', 'Quarterly'].map((option) => (
           value === option.toLowerCase() ? (
             <RainbowButton
               key={option.toLowerCase()}
               onClick={() => onChange(option.toLowerCase())}
-              className="w-full py-4 text-lg bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full"
+              className="w-full py-4 text-lg !bg-blue-500 hover:!bg-blue-600 !text-white border border-blue-400 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
             >
               {option}
             </RainbowButton>
@@ -55,7 +55,7 @@ const questions: {
             <Button
               key={option.toLowerCase()}
               onClick={() => onChange(option.toLowerCase())}
-              className="w-full py-4 text-lg bg-white/10 hover:bg-white/20 border border-white/20 rounded-full"
+              className="w-full py-4 text-lg bg-white hover:bg-gray-100 text-gray-800 border border-gray-200 rounded-full shadow-md transition-all duration-300 transform hover:scale-105"
             >
               {option}
             </Button>
@@ -68,13 +68,13 @@ const questions: {
     id: 'amount',
     title: 'How much do you want to invest?',
     component: ({ value, onChange }: { value: string, onChange: (value: string) => void }) => (
-      <div className="relative">
-        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-white/60" />
+      <div className="relative w-full">
+        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
         <input
           type="number"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full pl-10 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-md transition-all duration-300"
           placeholder="Enter amount"
         />
       </div>
@@ -82,14 +82,14 @@ const questions: {
   },
 ]
 
-function QuestionCard({ question, value, onChange }: {
+function QuestionScreen({ question, value, onChange }: {
   question: typeof questions[0],
   value: any,
   onChange: (value: any) => void,
 }) {
   return (
-    <div className="w-full max-w-md p-6">
-      <h2 className="text-3xl font-bold mb-8 text-white leading-tight">{question.title}</h2>
+    <div className="flex flex-col items-center justify-center h-full w-full px-6">
+      <h2 className="text-3xl font-bold mb-8 text-gray-800 leading-tight text-center">{question.title}</h2>
       <question.component value={value} onChange={onChange} />
     </div>
   )
@@ -126,17 +126,16 @@ export default function InvestmentQuestionnaire() {
   }
 
   const swipeHandlers = useSwipeable({
-    onSwipedUp: handleNext,
-    onSwipedDown: handlePrevious,
-    //preventDefaultTouchmoveEvent: true,
+    onSwipedLeft: handleNext,
+    onSwipedRight: handlePrevious,
     trackMouse: true
   })
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'ArrowDown') {
+      if (event.key === 'ArrowRight') {
         handleNext()
-      } else if (event.key === 'ArrowUp') {
+      } else if (event.key === 'ArrowLeft') {
         handlePrevious()
       }
     }
@@ -148,74 +147,66 @@ export default function InvestmentQuestionnaire() {
   }, [currentStep])
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-400 via-blue-600 to-blue-800 text-white overflow-hidden relative">
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-5 mix-blend-soft-light" />
-        <div className="absolute inset-0 backdrop-blur-3xl" />
-        <motion.div
-          className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-300/30 rounded-full filter blur-[100px]"
-          animate={{
-            x: [0, 100, 0],
-            y: [0, -50, 0],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-        <motion.div
-          className="absolute bottom-1/4 right-1/4 w-128 h-128 bg-blue-500/30 rounded-full filter blur-[100px]"
-          animate={{
-            x: [0, -100, 0],
-            y: [0, 50, 0],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
-      </div>
-
-      <div className="w-full max-w-md px-4" {...swipeHandlers}>
-        <AnimatePresence initial={false} custom={direction}>
-          <motion.div
-            key={currentStep}
-            custom={direction}
-            initial={{ opacity: 0, y: direction > 0 ? 50 : -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: direction > 0 ? -50 : 50 }}
-            transition={{ duration: 0.3 }}
-          >
-            <QuestionCard
-              question={questions[currentStep]}
-              value={answers[questions[currentStep].id as keyof typeof answers]}
-              onChange={(value) => handleChange(questions[currentStep].id, value)}
-            />
-          </motion.div>
-        </AnimatePresence>
-
-        <div className="mt-8 flex justify-center">
-          {questions.map((_, index) => (
-            <div
-              key={index}
-              className={`w-3 h-3 rounded-full mx-1 ${
-                index === currentStep ? 'bg-white' : 'bg-white/30'
-              }`}
-            />
-          ))}
+    <div className="h-screen w-screen flex flex-col items-center justify-between bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 text-gray-800 overflow-hidden">
+      <div className="w-full h-full flex flex-col items-center justify-between" {...swipeHandlers}>
+        <div className="w-full flex-grow flex items-center justify-center overflow-hidden">
+          <AnimatePresence initial={false} custom={direction}>
+            <motion.div
+              key={currentStep}
+              custom={direction}
+              initial={{ opacity: 0, x: direction > 0 ? '100%' : '-100%' }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: direction > 0 ? '-100%' : '100%' }}
+              transition={{ 
+                type: 'spring', 
+                stiffness: 300, 
+                damping: 30,
+                opacity: { duration: 0.2 }
+              }}
+              className="absolute w-full h-full flex items-center justify-center"
+            >
+              <QuestionScreen
+                question={questions[currentStep]}
+                value={answers[questions[currentStep].id as keyof typeof answers]}
+                onChange={(value) => handleChange(questions[currentStep].id, value)}
+              />
+            </motion.div>
+          </AnimatePresence>
         </div>
 
-        <div className="mt-8 flex justify-center">
-          <Button onClick={handleNext} className="px-8 py-3 text-lg bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full">
-            {currentStep === questions.length - 1 ? 'Submit' : 'Next'}
-            <ChevronDown className="ml-2 h-5 w-5" />
-          </Button>
-        </div>
-
-        <div className="mt-6 text-center text-sm text-white/60">
-          Swipe up or down to navigate
+        <div className="w-full px-6 py-8 bg-white bg-opacity-80 backdrop-blur-md">
+          <div className="flex justify-between items-center mb-4">
+            <Button 
+              onClick={handlePrevious}
+              disabled={currentStep === 0}
+              className="px-4 py-2 text-sm bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-full shadow-md transition-all duration-300 disabled:opacity-50"
+            >
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Back
+            </Button>
+            <div className="flex space-x-2">
+              {questions.map((_, index) => (
+                <motion.div
+                  key={index}
+                  className={`w-2 h-2 rounded-full ${
+                    index === currentStep ? 'bg-blue-500' : 'bg-gray-300'
+                  }`}
+                  animate={{ scale: index === currentStep ? 1.2 : 1 }}
+                  transition={{ duration: 0.3 }}
+                />
+              ))}
+            </div>
+            <Button 
+              onClick={handleNext} 
+              className="px-4 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-md transition-all duration-300"
+            >
+              {currentStep === questions.length - 1 ? 'Submit' : 'Next'}
+              {currentStep !== questions.length - 1 && <ChevronRight className="w-4 h-4 ml-1" />}
+            </Button>
+          </div>
+          <p className="text-center text-sm text-gray-600">
+            Swipe left or right to navigate
+          </p>
         </div>
       </div>
     </div>
