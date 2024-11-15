@@ -47,7 +47,7 @@ const questions: {
             <RainbowButton
               key={option.toLowerCase()}
               onClick={() => onChange(option.toLowerCase())}
-              className="w-full py-4 text-lg bg-white/10 hover:bg-white/20 text-white border border-white/20"
+              className="w-full py-4 text-lg bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full"
             >
               {option}
             </RainbowButton>
@@ -55,7 +55,7 @@ const questions: {
             <Button
               key={option.toLowerCase()}
               onClick={() => onChange(option.toLowerCase())}
-              className="w-full py-4 text-lg bg-white/10 hover:bg-white/20"
+              className="w-full py-4 text-lg bg-white/10 hover:bg-white/20 border border-white/20 rounded-full"
             >
               {option}
             </Button>
