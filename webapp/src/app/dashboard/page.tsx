@@ -62,6 +62,7 @@ import { redirect } from "next/navigation";
 import { Notification, UserChannel } from "@/types";
 import SparklesText from "@/components/ui/sparkles-text";
 import Link from "next/link";
+import { ChatDialog } from "@/components/ui/chat-dialog";
 
 const generateTimeFrameData = (
   timeFrame: "1H" | "1D" | "1W" | "1M" | "1Y" | "Max"
@@ -628,11 +629,9 @@ export default function Component() {
         onClick={() => setChatOpen(true)}
         className="fixed bottom-24 right-4 rounded-full w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
       >
-        <MessageSquare size={28} />
+        <MessageSquare className="h-6 w-6" />
       </Button>
-      <Dialog open={chatOpen} onOpenChange={setChatOpen}>
-        {/* Chatbot Dialog content here */}
-      </Dialog>
+      <ChatDialog open={chatOpen} onOpenChange={setChatOpen} />
     </div>
   );
 }
