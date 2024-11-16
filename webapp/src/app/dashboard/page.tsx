@@ -1,13 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { Bell, ChevronDown, Wallet2, Plus, ArrowUpRight, MessageSquare, Settings, User, LogOut, Clock, TrendingUp, Bot, Shield } from 'lucide-react'
+import { Bell, Wallet2, Plus, ArrowUpRight, MessageSquare, Settings, User, LogOut, Clock, TrendingUp, Bot, Shield, ArrowLeftRight, BracketsIcon as Bridge, Zap } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast, Toaster } from 'react-hot-toast'
@@ -96,11 +98,11 @@ const notifications = [
 ]
 
 export default function Component() {
-  const [selectedNetwork, setSelectedNetwork] = useState('All networks')
   const [selectedTab, setSelectedTab] = useState('portfolio')
   const [hasUnread, setHasUnread] = useState(true)
   const [chatOpen, setChatOpen] = useState(false)
   const [selectedTimeFrame, setSelectedTimeFrame] = useState<'1H' | '1D' | '1W' | '1M' | '1Y' | 'Max'>('1D')
+  const [autoDCA, setAutoDCA] = useState(false)
   const totalValue = 5277.26
   const changePercentage = 12.70
   const changeValue = 595.74
@@ -207,26 +209,16 @@ export default function Component() {
               transition={{ duration: 0.2 }}
               className="h-full"
             >
-              <div className="flex items-center gap-2 mb-6">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-full justify-between">
-                      {selectedNetwork}
-                      <ChevronDown className="h-4 w-4 opacity-50" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-[200px]">
-                    <DropdownMenuItem onClick={() => setSelectedNetwork('All networks')}>
-                      All networks
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSelectedNetwork('Ethereum')}>
-                      Ethereum
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSelectedNetwork('Polygon')}>
-                      Polygon
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Zap className="h-4 w-4" />
+                  <Label htmlFor="auto-dca">Auto-DCA</Label>
+                  <Switch
+                    id="auto-dca"
+                    checked={autoDCA}
+                    onCheckedChange={setAutoDCA}
+                  />
+                </div>
               </div>
 
               <Card className="mb-6">
@@ -286,7 +278,7 @@ export default function Component() {
                         key={timeFrame}
                         variant={selectedTimeFrame === timeFrame ? "default" : "outline"}
                         size="sm"
-                        onClick={() => setSelectedTimeFrame(timeFrame)}
+                        onClick={() => setSelectedTimeFrame(timeFrame as '1H' | '1D' | '1W' | '1M' | '1Y' | 'Max')}
                         className={`px-3 py-1 text-xs ${selectedTimeFrame === timeFrame ? 'bg-primary text-primary-foreground' : 'bg-background text-foreground'}`}
                       >
                         {timeFrame}
@@ -295,6 +287,25 @@ export default function Component() {
                   </div>
                 </CardContent>
               </Card>
+
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <Button
+                  variant="default"
+                  className="w-full py-6 text-lg"
+                  onClick={() => toast.success('Swap initiated!')}
+                >
+                  <ArrowLeftRight className="mr-2 h-5 w-5" />
+                  Swap Assets
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full py-6 text-lg"
+                  onClick={() => toast.success('Transfer initiated!')}
+                >
+                  <Bridge className="mr-2 h-5 w-5" />
+                  Transfer Assets
+                </Button>
+              </div>
 
               <Tabs defaultValue="tokens" className="space-y-4">
                 <TabsList className="grid w-full grid-cols-2">
