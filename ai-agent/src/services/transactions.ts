@@ -6,7 +6,6 @@ export class TransactionHandler {
   private privyService: PrivyService
 
   constructor() {
-    // Initialize Privy service with config from vault
     let vault: Record<string, string> = {}
     try {
       vault = JSON.parse(process.env.secret || '{}')
@@ -16,8 +15,7 @@ export class TransactionHandler {
 
     this.privyService = new PrivyService({
       appId: vault.PRIVY_APP_ID || '',
-      appSecret: vault.PRIVY_APP_SECRET || '',
-      authSignature: vault.PRIVY_AUTH_SIGNATURE || ''
+      appSecret: vault.PRIVY_APP_SECRET || ''
     })
   }
 
