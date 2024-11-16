@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 import { Bot, ShieldCheck, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { redirect } from "next/navigation";
-import { useEffect } from "react";
+import { setCookie } from "cookies-next/client";
 
 function GradientBackground() {
   return (
@@ -46,6 +46,7 @@ export default function HomePage() {
 
   const { login } = useLogin({
     onComplete: (user, isNewUser) => {
+      setCookie("wallet_address", user.wallet?.address);
       if (isNewUser) {
         redirect("/form");
       } else redirect("/dashboard");

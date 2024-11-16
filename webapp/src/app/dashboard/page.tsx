@@ -61,6 +61,7 @@ import {
 import { redirect } from "next/navigation";
 import { Notification, UserChannel } from "@/types";
 import SparklesText from "@/components/ui/sparkles-text";
+import Link from "next/link";
 
 const generateTimeFrameData = (
   timeFrame: "1H" | "1D" | "1W" | "1M" | "1Y" | "Max"
@@ -593,14 +594,15 @@ export default function Component() {
             <span className="text-sm">Portfolio</span>
           </Button>
 
-          <Button
-            className="bg-blue-600 text-white rounded-full px-6 py-3 flex items-center gap-2 hover:bg-blue-700"
-            onClick={() => toast.success("New investment initiated!")}
-          >
-            <Plus className="w-5 h-5" />
-            <span className="text-base">New investment</span>
-          </Button>
-
+          <Link href={"/deposit"}>
+            <Button
+              className="bg-blue-600 text-white rounded-full px-6 py-3 flex items-center gap-2 hover:bg-blue-700"
+              onClick={() => toast.success("New investment initiated!")}
+            >
+              <Plus className="w-5 h-5" />
+              <span className="text-base">New investment</span>
+            </Button>
+          </Link>
           <Button
             variant="ghost"
             className={`flex flex-col items-center gap-2 relative ${

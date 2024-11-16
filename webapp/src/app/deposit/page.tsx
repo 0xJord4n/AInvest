@@ -1,36 +1,37 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { ArrowLeft, Copy, Check, ExternalLink } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { toast, Toaster } from "react-hot-toast"
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import Image from 'next/image'
-import SparklesText from "@/components/ui/sparkles-text"
-import usdcLogo from '@/../public/usd-coin-usdc-logo.png'
-import visaLogo from '@/../public/visa-svgrepo-com.svg'
-import mastercardLogo from '@/../public/mc_symbol.svg'
-import paypalLogo from '@/../public/paypal-svgrepo-com.svg'
-import applepayLogo from '@/../public/apple-pay-logo-svgrepo-com.svg'
-import googlepayLogo from '@/../public/google-pay-primary-logo-logo-svgrepo-com.svg'
+import { useState } from "react";
+import { ArrowLeft, Copy, Check, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast, Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import SparklesText from "@/components/ui/sparkles-text";
+import usdcLogo from "@/../public/usd-coin-usdc-logo.png";
+import visaLogo from "@/../public/visa-svgrepo-com.svg";
+import mastercardLogo from "@/../public/mc_symbol.svg";
+import paypalLogo from "@/../public/paypal-svgrepo-com.svg";
+import applepayLogo from "@/../public/apple-pay-logo-svgrepo-com.svg";
+import googlepayLogo from "@/../public/google-pay-primary-logo-logo-svgrepo-com.svg";
+import { getCookie } from "cookies-next/client";
 
 export default function Component() {
-  const [copied, setCopied] = useState(false)
-  const router = useRouter()
-  const walletAddress = "0x30C50B8160cd31320faB5326e572F5d"
+  const [copied, setCopied] = useState(false);
+  const router = useRouter();
+  const walletAddress = getCookie("wallet_address");
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(walletAddress)
-    setCopied(true)
-    toast.success('Address copied to clipboard!')
-    setTimeout(() => setCopied(false), 2000)
-  }
+    await navigator.clipboard.writeText(walletAddress as string);
+    setCopied(true);
+    toast.success("Address copied to clipboard!");
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleMaybeLater = () => {
-    router.push('/dashboard')
-  }
+    router.push("/dashboard");
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -56,7 +57,7 @@ export default function Component() {
               className="flex justify-center"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+              transition={{ type: "spring", stiffness: 260, damping: 20 }}
             >
               <Image
                 src={usdcLogo}
@@ -70,22 +71,28 @@ export default function Component() {
 
             <div className="space-y-4">
               <div className="flex items-start gap-4">
-                <span className="bg-blue-500/20 text-blue-400 w-6 h-6 flex items-center justify-center rounded-full">1</span>
+                <span className="bg-blue-500/20 text-blue-400 w-6 h-6 flex items-center justify-center rounded-full">
+                  1
+                </span>
                 <div>
                   <p className="text-muted-foreground">
-                    Buy USDC on{' '}
-                    <span className="text-blue-400">Coinbase</span>,{' '}
-                    <span className="text-blue-400">Binance</span> or another{' '}
-                    <span className="text-blue-400 hover:underline cursor-pointer">exchange</span>.
+                    Buy USDC on <span className="text-blue-400">Coinbase</span>,{" "}
+                    <span className="text-blue-400">Binance</span> or another{" "}
+                    <span className="text-blue-400 hover:underline cursor-pointer">
+                      exchange
+                    </span>
+                    .
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-4">
-                <span className="bg-blue-500/20 text-blue-400 w-6 h-6 flex items-center justify-center rounded-full">2</span>
+                <span className="bg-blue-500/20 text-blue-400 w-6 h-6 flex items-center justify-center rounded-full">
+                  2
+                </span>
                 <div>
                   <p className="text-muted-foreground">
-                    Send/withdraw USDC to the address below and select{' '}
+                    Send/withdraw USDC to the address below and select{" "}
                     <span className="bg-blue-500/20 px-2 py-1 rounded text-sm">
                       <Image
                         src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg"
@@ -95,8 +102,8 @@ export default function Component() {
                         className="inline mr-1 rounded-full"
                       />
                       Base
-                    </span>
-                    {' '}as the network.
+                    </span>{" "}
+                    as the network.
                   </p>
                 </div>
               </div>
@@ -104,7 +111,9 @@ export default function Component() {
 
             <Card className="bg-muted">
               <CardContent className="p-3">
-                <code className="text-muted-foreground text-sm break-all">{walletAddress}</code>
+                <code className="text-muted-foreground text-sm break-all">
+                  {walletAddress}
+                </code>
               </CardContent>
             </Card>
 
@@ -130,26 +139,35 @@ export default function Component() {
         <div className="mt-8">
           <h2 className="text-lg mb-4 font-semibold">Other methods</h2>
           <div className="grid grid-cols-5 gap-4 mb-4">
-            {['Visa', 'Mastercard', 'PayPal', 'Apple Pay', 'Google Pay'].map((method) => (
-              <div key={method} className="bg-muted p-2 rounded flex items-center justify-center">
-                <Image
-                  src={
-                    method === 'Visa' ? visaLogo :
-                    method === 'Mastercard' ? mastercardLogo :
-                    method === 'PayPal' ? paypalLogo :
-                    method === 'Apple Pay' ? applepayLogo :
-                    googlepayLogo
-                  }
-                  alt={method}
-                  width={56}
-                  height={56}
-                />
-              </div>
-            ))}
+            {["Visa", "Mastercard", "PayPal", "Apple Pay", "Google Pay"].map(
+              (method) => (
+                <div
+                  key={method}
+                  className="bg-muted p-2 rounded flex items-center justify-center"
+                >
+                  <Image
+                    src={
+                      method === "Visa"
+                        ? visaLogo
+                        : method === "Mastercard"
+                        ? mastercardLogo
+                        : method === "PayPal"
+                        ? paypalLogo
+                        : method === "Apple Pay"
+                        ? applepayLogo
+                        : googlepayLogo
+                    }
+                    alt={method}
+                    width={56}
+                    height={56}
+                  />
+                </div>
+              )
+            )}
           </div>
-          <Button 
+          <Button
             className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={() => toast.success('Redirecting to purchase page...')}
+            onClick={() => toast.success("Redirecting to purchase page...")}
           >
             Buy USDC
             <ExternalLink className="w-4 h-4 ml-2" />
@@ -169,5 +187,5 @@ export default function Component() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
