@@ -1,5 +1,4 @@
 "use client";
-"use client";
 
 import { CONSTANTS, PushAPI } from "@pushprotocol/restapi";
 import { use, useEffect, useState } from "react";
@@ -56,6 +55,7 @@ import {
 import { usePrivy, useWallets } from "@privy-io/react-auth";
 import { redirect } from "next/navigation";
 import { Notification, UserChannel } from "@/types";
+import SparklesText from "@/components/ui/sparkles-text";
 
 const generateTimeFrameData = (
   timeFrame: "1H" | "1D" | "1W" | "1M" | "1Y" | "Max"
@@ -74,19 +74,11 @@ const generateTimeFrameData = (
   };
 
   let baseValue = 4000;
-  let baseValue = 4000;
   for (let i = 11; i >= 0; i--) {
     const time = new Date(now - i * intervals[timeFrame]);
     baseValue += Math.random() * 100 + 50; // Ensure consistent growth
-    const time = new Date(now - i * intervals[timeFrame]);
-    baseValue += Math.random() * 100 + 50; // Ensure consistent growth
+
     data.push({
-      time: time.toLocaleString("en-US", {
-        hour: "numeric",
-        minute: "numeric",
-        month: "short",
-        day: "numeric",
-        year: timeFrame === "Max" ? "numeric" : undefined,
       time: time.toLocaleString("en-US", {
         hour: "numeric",
         minute: "numeric",
@@ -96,22 +88,11 @@ const generateTimeFrameData = (
       }),
       value: parseFloat(baseValue.toFixed(2)),
     });
-      value: parseFloat(baseValue.toFixed(2)),
-    });
   }
-  return data;
-};
   return data;
 };
 
 const timeFrames = {
-  "1H": generateTimeFrameData("1H"),
-  "1D": generateTimeFrameData("1D"),
-  "1W": generateTimeFrameData("1W"),
-  "1M": generateTimeFrameData("1M"),
-  "1Y": generateTimeFrameData("1Y"),
-  Max: generateTimeFrameData("Max"),
-};
   "1H": generateTimeFrameData("1H"),
   "1D": generateTimeFrameData("1D"),
   "1W": generateTimeFrameData("1W"),
@@ -162,83 +143,6 @@ const assets = [
     balance: "$147,139.04",
   },
 ];
-  {
-    name: "1INCH",
-    icon: "🦄",
-    percentage: "42.23%",
-    price: "$0.3092",
-    priceChange: "+0.33%",
-    balance: "$645,508.49",
-  },
-  {
-    name: "DAI",
-    icon: "💰",
-    percentage: "36.23%",
-    price: "$1.00",
-    priceChange: "-0.03%",
-    balance: "$555,508.49",
-  },
-  {
-    name: "KNCL",
-    icon: "🔷",
-    percentage: "27.95%",
-    price: "$0.63",
-    priceChange: "+2.33%",
-    balance: "$440,703.90",
-  },
-  {
-    name: "ETH",
-    icon: "⚡",
-    percentage: "24.69%",
-    price: "$1,216.65",
-    priceChange: "+3.49%",
-    balance: "$389,330.07",
-  },
-  {
-    name: "OMG",
-    icon: "🔵",
-    percentage: "9.33%",
-    price: "$1.19",
-    priceChange: "+4.25%",
-    balance: "$147,139.04",
-  },
-];
-
-const notifications = [
-  {
-    id: 1,
-    icon: <Clock className="w-6 h-6" />,
-    title: "New Investment Opportunity",
-    description: "A new DCA strategy is available for Bitcoin.",
-    timeAgo: "5 min ago",
-    iconBg: "bg-blue-500/10",
-  },
-  {
-    id: 2,
-    icon: <TrendingUp className="w-6 h-6" />,
-    title: "Portfolio Update",
-    description: "Your Ethereum holdings have increased by 5%.",
-    timeAgo: "1 hour ago",
-    iconBg: "bg-green-500/10",
-  },
-  {
-    id: 3,
-    icon: <Bot className="w-6 h-6" />,
-    title: "AI Agent Alert",
-    description: "Your AI agent has made a new recommendation.",
-    timeAgo: "2 hours ago",
-    iconBg: "bg-purple-500/10",
-  },
-  {
-    id: 4,
-    icon: <Shield className="w-6 h-6" />,
-    title: "Security Update",
-    description: "New TEE protocols have been implemented.",
-    timeAgo: "1 day ago",
-    iconBg: "bg-gray-500/10",
-  },
-];
-];
 
 export default function Component() {
   const [selectedTab, setSelectedTab] = useState("portfolio");
@@ -259,19 +163,7 @@ export default function Component() {
     setHasUnread(false);
     toast.success("Marked all notifications as read");
   };
-    setHasUnread(false);
-    toast.success("Marked all notifications as read");
-  };
 
-  const CustomTooltip = ({
-    active,
-    payload,
-    label,
-  }: {
-    active: boolean;
-    payload: { value: number }[];
-    label: string;
-  }) => {
   const CustomTooltip = ({
     active,
     payload,
@@ -294,8 +186,6 @@ export default function Component() {
         </div>
       );
     }
-    return null;
-  };
     return null;
   };
 
@@ -335,7 +225,7 @@ export default function Component() {
       const interval = setInterval(fetchNotifications, 20000);
 
       return () => clearInterval(interval);
-    }, [user]);
+    }, []);
 
     return (
       <div className="flex flex-col h-full">
@@ -435,7 +325,6 @@ export default function Component() {
       <main className="flex-1 p-4 pb-24 overflow-hidden">
         <AnimatePresence mode="wait">
           {selectedTab === "portfolio" ? (
-          {selectedTab === "portfolio" ? (
             <motion.div
               key="portfolio"
               initial={{ opacity: 0, y: 20 }}
@@ -461,12 +350,13 @@ export default function Component() {
                   <CardTitle className="flex items-center justify-between">
                     <div>
                       <div className="text-3xl font-bold">
-                        ${totalValue.toLocaleString()}
+                        {" "}
+                        <SparklesText
+                          text={`$${totalValue.toLocaleString()}`}
+                        />
                       </div>
                       <div className="flex items-center text-sm font-normal text-blue-500">
                         <ArrowUpRight className="mr-1 h-4 w-4" />
-                        {changePercentage.toFixed(2)}% ($
-                        {changeValue.toFixed(2)})
                         {changePercentage.toFixed(2)}% ($
                         {changeValue.toFixed(2)})
                       </div>
@@ -502,23 +392,6 @@ export default function Component() {
                                 stopColor="#2563eb"
                                 stopOpacity={0}
                               />
-                            <linearGradient
-                              id="colorValue"
-                              x1="0"
-                              y1="0"
-                              x2="0"
-                              y2="1"
-                            >
-                              <stop
-                                offset="5%"
-                                stopColor="#2563eb"
-                                stopOpacity={0.8}
-                              />
-                              <stop
-                                offset="95%"
-                                stopColor="#2563eb"
-                                stopOpacity={0}
-                              />
                             </linearGradient>
                           </defs>
                           <XAxis
@@ -526,33 +399,11 @@ export default function Component() {
                             axisLine={false}
                             tickLine={false}
                             tick={{ fontSize: 12, fill: "#6b7280" }}
-                          <XAxis
-                            dataKey="time"
-                            axisLine={false}
-                            tickLine={false}
-                            tick={{ fontSize: 12, fill: "#6b7280" }}
                           />
-                          <YAxis
                           <YAxis
                             hide={true}
                             domain={["dataMin - 100", "dataMax + 100"]}
-                            domain={["dataMin - 100", "dataMax + 100"]}
                           />
-                          <Tooltip
-                            content={
-                              <CustomTooltip
-                                active={false}
-                                payload={[]}
-                                label={""}
-                              />
-                            }
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="value"
-                            stroke="#2563eb"
-                            fillOpacity={1}
-                            fill="url(#colorValue)"
                           <Tooltip
                             content={
                               <CustomTooltip
@@ -582,28 +433,7 @@ export default function Component() {
                             ? "default"
                             : "outline"
                         }
-                        variant={
-                          selectedTimeFrame === timeFrame
-                            ? "default"
-                            : "outline"
-                        }
                         size="sm"
-                        onClick={() =>
-                          setSelectedTimeFrame(
-                            timeFrame as
-                              | "1H"
-                              | "1D"
-                              | "1W"
-                              | "1M"
-                              | "1Y"
-                              | "Max"
-                          )
-                        }
-                        className={`px-3 py-1 text-xs ${
-                          selectedTimeFrame === timeFrame
-                            ? "bg-blue-600 text-white"
-                            : "bg-background text-foreground"
-                        }`}
                         onClick={() =>
                           setSelectedTimeFrame(
                             timeFrame as
@@ -633,7 +463,6 @@ export default function Component() {
                   variant="default"
                   className="w-full py-6 text-lg bg-blue-600 text-white hover:bg-blue-700"
                   onClick={() => toast.success("Swap initiated!")}
-                  onClick={() => toast.success("Swap initiated!")}
                 >
                   <ArrowLeftRight className="mr-2 h-5 w-5" />
                   Swap Assets
@@ -641,7 +470,6 @@ export default function Component() {
                 <Button
                   variant="outline"
                   className="w-full py-6 text-lg border-blue-200 dark:border-blue-800"
-                  onClick={() => toast.success("Transfer initiated!")}
                   onClick={() => toast.success("Transfer initiated!")}
                 >
                   <Bridge className="mr-2 h-5 w-5" />
@@ -667,20 +495,10 @@ export default function Component() {
                                 <p className="text-sm text-muted-foreground">
                                   {asset.percentage}
                                 </p>
-                                <p className="text-sm text-muted-foreground">
-                                  {asset.percentage}
-                                </p>
                               </div>
                             </div>
                             <div className="text-right">
                               <p className="font-medium">{asset.price}</p>
-                              <p
-                                className={`text-sm ${
-                                  asset.priceChange.startsWith("+")
-                                    ? "text-blue-500"
-                                    : "text-red-500"
-                                }`}
-                              >
                               <p
                                 className={`text-sm ${
                                   asset.priceChange.startsWith("+")
@@ -701,9 +519,6 @@ export default function Component() {
                   </ScrollArea>
                 </TabsContent>
                 <TabsContent value="transactions">
-                  <div className="text-center text-muted-foreground py-8">
-                    No recent transactions
-                  </div>
                   <div className="text-center text-muted-foreground py-8">
                     No recent transactions
                   </div>
@@ -735,12 +550,6 @@ export default function Component() {
                 : "text-muted-foreground"
             }`}
             onClick={() => setSelectedTab("portfolio")}
-            className={`flex flex-col items-center gap-2 ${
-              selectedTab === "portfolio"
-                ? "text-primary"
-                : "text-muted-foreground"
-            }`}
-            onClick={() => setSelectedTab("portfolio")}
           >
             <Wallet2 className="w-7 h-7" />
             <span className="text-sm">Portfolio</span>
@@ -749,7 +558,6 @@ export default function Component() {
           <Button
             className="bg-blue-600 text-white rounded-full px-6 py-3 flex items-center gap-2 hover:bg-blue-700"
             onClick={() => toast.success("New investment initiated!")}
-            onClick={() => toast.success("New investment initiated!")}
           >
             <Plus className="w-5 h-5" />
             <span className="text-base">New investment</span>
@@ -757,12 +565,6 @@ export default function Component() {
 
           <Button
             variant="ghost"
-            className={`flex flex-col items-center gap-2 relative ${
-              selectedTab === "notifications"
-                ? "text-primary"
-                : "text-muted-foreground"
-            }`}
-            onClick={() => setSelectedTab("notifications")}
             className={`flex flex-col items-center gap-2 relative ${
               selectedTab === "notifications"
                 ? "text-primary"
@@ -793,6 +595,4 @@ export default function Component() {
       </Dialog>
     </div>
   );
-  );
 }
-
