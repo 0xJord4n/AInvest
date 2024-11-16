@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const INCH_API_KEY = process.env.INCH_API_KEY;
 const INCH_API_URL = 'https://api.1inch.dev/portfolio/portfolio/v4/overview/erc20';
@@ -50,6 +50,7 @@ export async function GET() {
 
     const tokenAddresses = portfolioResponse.data.result.map((token: any) => token.contract_address);
 
+    console.log(tokenAddresses)
     const tokenDetailsConfig = {
       headers: {
         Authorization: `Bearer ${INCH_API_KEY}`,
@@ -61,6 +62,10 @@ export async function GET() {
       },
     };
 
+    if (!tokenAddresses.length)
+      return NextResponse.json({ result: [], total_balance: 0 });
+
+    
     const tokenDetailsResponse = await axios.get(TOKEN_API_URL, tokenDetailsConfig);
 
     if (tokenDetailsResponse.status !== 200) {
@@ -76,8 +81,12 @@ export async function GET() {
       };
     });
 
-    return NextResponse.json({ result: combinedData });
+    const totalBalance = combinedData.reduce((sum: number, token: any) => sum + token.value_usd, 0);
+
+    return NextResponse.json({ result: combinedData, total_balance: totalBalance });
   } catch (error) {
+    if (error instanceof AxiosError)
+      console.log(error.response?.data)
     console.error('API call error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch data' },
