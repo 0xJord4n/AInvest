@@ -86,6 +86,43 @@ interface PortfolioData {
   total_balance: number;
 }
 
+const transactionData = [
+  {
+    id: 1,
+    type: "send",
+    amount: 0.5,
+    token: "ETH",
+    to: "0x1234...5678",
+    date: "2023-11-15",
+    status: "completed",
+    gasPrice: 0.0005,
+    txHash: "0xabcd...ef01"
+  },
+  {
+    id: 2,
+    type: "receive",
+    amount: 100,
+    token: "USDT",
+    from: "0x9876...5432",
+    date: "2023-11-14",
+    status: "completed",
+    gasPrice: 0.0003,
+    txHash: "0x2345...6789"
+  },
+  {
+    id: 3,
+    type: "swap",
+    amountFrom: 1,
+    tokenFrom: "ETH",
+    amountTo: 1800,
+    tokenTo: "USDT",
+    date: "2023-11-13",
+    status: "pending",
+    gasPrice: 0.0008,
+    txHash: "0xfedc...ba98"
+  }
+]
+
 const generateTimeFrameData = (
   timeFrame: "1H" | "1D" | "1W" | "1M" | "1Y" | "Max"
 ) => {
