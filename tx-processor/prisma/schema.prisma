@@ -22,6 +22,7 @@ model Strategy {
   amount      Decimal
   recurrency  Int
   lastTrade   DateTime?
+  nextTrade   DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   // A strategy can have many trades
