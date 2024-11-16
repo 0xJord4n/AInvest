@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import AnimatedGridPattern from "@/components/ui/animated-grid-pattern";
 import type { ConfettiRef } from "@/components/ui/confetti";
 import Confetti from "@/components/ui/confetti";
+import HyperText from '@/components/ui/hyper-text'
 
 const gradientAnimation = keyframes`
   0% { background-position: 0% 50%; }
@@ -191,7 +192,10 @@ function ProfileResult({ answers }: { answers: Record<string, string> }) {
         ref={confettiRef}
         className="absolute left-0 top-0 z-0 size-full"
       />
-      <p className="text-2xl font-semibold mb-4 text-blue-600">{result.profile}</p>
+      <HyperText
+      className="text-2xl font-semibold mb-4 text-blue-600"
+      text={result.profile}
+      />
       <p className="text-lg mb-8 text-gray-600">{result.strategy}</p>
       <RainbowButton 
         className="px-6 py-3 text-lg rounded-full shadow-md transition-all duration-300 transform hover:scale-105"
