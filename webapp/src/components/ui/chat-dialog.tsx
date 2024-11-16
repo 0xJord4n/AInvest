@@ -8,6 +8,11 @@ import { Send } from "lucide-react";
 import { fetchPortfolioValue } from '@/hooks/useInchFolio';
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Player } from '@lottiefiles/react-lottie-player';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -92,7 +97,15 @@ ${content}`;
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] h-[600px] flex flex-col gap-4">
         <DialogHeader>
-          <DialogTitle>AI Assistant</DialogTitle>
+          <div className="flex flex-col items-center">
+            <Player
+              autoplay
+              loop
+              src="/alfred.json"
+              style={{ height: '120px', width: '120px' }}
+            />
+            <DialogTitle className="mt-2">AI Assistant</DialogTitle>
+          </div>
         </DialogHeader>
         
         <ScrollArea className="flex-1 pr-4">
@@ -111,7 +124,50 @@ ${content}`;
                       : 'bg-blue-600 text-white'
                   }`}
                 >
-                  {message.content}
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      code({node, inline, className, children, ...props}) {
+                        const match = /language-(\w+)/.exec(className || '');
+                        return !inline && match ? (
+                          <SyntaxHighlighter
+                            {...props}
+                            style={oneDark}
+                            language={match[1]}
+                            PreTag="div"
+                          >
+                            {String(children).replace(/\n$/, '')}
+                          </SyntaxHighlighter>
+                        ) : (
+                          <code {...props} className={className}>
+                            {children}
+                          </code>
+                        );
+                      },
+                      // Style other markdown elements
+                      p: ({children}) => <p className="mb-2 last:mb-0">{children}</p>,
+                      ul: ({children}) => <ul className="list-disc ml-4 mb-2">{children}</ul>,
+                      ol: ({children}) => <ol className="list-decimal ml-4 mb-2">{children}</ol>,
+                      li: ({children}) => <li className="mb-1">{children}</li>,
+                      a: ({children, href}) => (
+                        <a 
+                          href={href}
+                          className="text-blue-400 hover:text-blue-500 underline"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {children}
+                        </a>
+                      ),
+                      blockquote: ({children}) => (
+                        <blockquote className="border-l-4 border-gray-300 pl-4 italic">
+                          {children}
+                        </blockquote>
+                      ),
+                    }}
+                  >
+                    {message.content}
+                  </ReactMarkdown>
                 </div>
               </div>
             ))}
