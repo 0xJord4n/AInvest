@@ -173,8 +173,8 @@ export default function Component() {
     );
 
     // Check if the wallet to delegate by inspecting the user's linked accounts
-    const isAlreadyDelegated = !!privyUser?.linkedAccounts.find(
-      (account: WalletWithMetadata) =>
+    const isAlreadyDelegated = !!(privyUser?.linkedAccounts as WalletWithMetadata[]).find(
+      (account) =>
         account.type === "wallet" &&
         account.address &&
         account.delegated === true
