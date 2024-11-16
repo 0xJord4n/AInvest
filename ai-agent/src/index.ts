@@ -1,16 +1,48 @@
 import { Hono } from 'hono'
+import { TappdClient } from '@phala/dstack-sdk'
 import { RedPillAI } from './services/redpill'
-import { TransactionHandler } from './services/transactions'
+import { privateKeyToAccount } from 'viem/accounts'
+import { 
+  keccak256,
+  http,
+  createPublicClient,
+  createWalletClient,
+  parseGwei
+} from 'viem'
+import { baseSepolia } from 'viem/chains'
+import superjson from 'superjson'
 
 const app = new Hono()
 
-// Initialize services
+// Initialize clients
+const teeEndpoint = process.env.DSTACK_SIMULATOR_ENDPOINT || 'http://localhost:8090'
+const teeClient = new TappdClient(teeEndpoint)
 const redPillService = new RedPillAI()
-const transactionService = new TransactionHandler()
+
+// Initialize blockchain clients
+const publicClient = createPublicClient({
+  chain: baseSepolia,
+  transport: http(),
+})
+
+const walletClient = createWalletClient({
+  chain: baseSepolia,
+  transport: http(),
+})
+
+// Helper function to get TEE-derived account
+async function getTeeAccount(purpose = "test") {
+  const derivedKey = await teeClient.deriveKey("/", purpose)
+  const privateKey = keccak256(derivedKey.asUint8Array())
+  return privateKeyToAccount(privateKey)
+}
 
 app.get('/', async (c) => {
-  // Basic health check
-  return c.json({ status: 'ok' })
+  const account = await getTeeAccount("health-check")
+  return c.json({ 
+    status: 'ok',
+    teeAccount: account.address
+  })
 })
 
 // AI Chat endpoint
@@ -45,15 +77,63 @@ app.post('/chat', async (c) => {
   }
 })
 
-// Transaction endpoints
-app.post('/transaction', async (c) => {
-  return await transactionService.handleTransaction(c)
+// Sign message endpoint
+app.post('/sign', async (c) => {
+  try {
+    const { message } = await c.req.json()
+    const account = await getTeeAccount()
+    
+    console.log(`Account [${account.address}] Signing Message [${message}]`)
+    const signature = await account.signMessage({ message })
+    console.log(`Message Signed [${signature}]`)
+
+    return c.json({ 
+      account: account.address, 
+      message, 
+      signature 
+    })
+  } catch (error) {
+    console.error('Signing error:', error)
+    return c.json({ error: 'Failed to sign message' }, 500)
+  }
 })
 
-app.post('/sign', async (c) => {
-  const body = await c.req.json()
-  body.type = 'sign'
-  return await transactionService.handleTransaction(c)
+// Transaction endpoint
+app.post('/transaction', async (c) => {
+  try {
+    const { to, gweiAmount } = await c.req.json()
+    const account = await getTeeAccount()
+    
+    let result = {
+      derivedPublicKey: account.address,
+      to,
+      gweiAmount,
+      hash: '',
+      receipt: {}
+    }
+
+    console.log(`Sending Transaction with Account ${account.address} to ${to} for ${gweiAmount} gwei`)
+    
+    const hash = await walletClient.sendTransaction({
+      account,
+      to,
+      value: parseGwei(`${gweiAmount}`),
+    })
+    
+    console.log(`Transaction Hash: ${hash}`)
+    const receipt = await publicClient.waitForTransactionReceipt({ hash })
+    console.log(`Transaction Status: ${receipt.status}`)
+    
+    result.hash = hash
+    result.receipt = receipt
+
+    const { json: jsonResult } = superjson.serialize(result)
+    return c.json({ jsonResult })
+
+  } catch (error) {
+    console.error('Transaction error:', error)
+    return c.json({ error })
+  }
 })
 
 export default app
