@@ -38,13 +38,14 @@
   },
   "dependencies": {
     "@hono/zod-validator": "^0.2.2",
+    "@phala/dstack-sdk": "^0.1.4",
     "@phala/wapo-env": "^0.9.4",
-    "@pushprotocol/restapi": "^1.7.0",
     "@privy-io/server-auth": "^1.2.0",
-    "superjson": "^2.2.1",
+    "@pushprotocol/restapi": "^1.7.0",
+    "canonicalize": "^1.0.8",
     "hono": "4.5.6",
+    "superjson": "^2.2.1",
     "viem": "^2.19.9",
-    "zod": "^3.22.4",
-    "canonicalize": "^1.0.8"
+    "zod": "^3.22.4"
   }
 }
