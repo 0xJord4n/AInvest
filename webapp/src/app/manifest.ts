@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "AInvest",
     short_name: "AInvest",
     description: "A Progressive Web App built with Next.js",
-    start_url: "/notifications",
+    start_url: "/dashboard",
     display: "fullscreen",
     background_color: "#ffffff",
     theme_color: "#000000",
