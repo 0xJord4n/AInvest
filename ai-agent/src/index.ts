@@ -1,61 +1,59 @@
-import '@phala/wapo-env'
-import { Hono } from 'hono/tiny'
-import { handle } from '@phala/wapo-env/guest'
-import { zValidator } from '@hono/zod-validator'
-import { z } from 'zod'
-import * as PushAPI from "@pushprotocol/restapi"
-import { createWalletClient, http } from 'viem'
-import { baseSepolia } from 'viem/chains'
+import { Hono } from 'hono'
+import { RedPillAI } from './services/redpill'
+import { TransactionHandler } from './services/transactions'
 
-export const app = new Hono()
+const app = new Hono()
 
-// Schema definitions
-const ConfigureSchema = z.object({
-  userId: z.string(),
-  investmentAmount: z.number(),
-  frequency: z.string(), // daily, weekly, monthly
-  targetToken: z.string(),
-  delegateAuth: z.string() // Privy delegate auth token
+// Initialize services
+const redPillService = new RedPillAI()
+const transactionService = new TransactionHandler()
+
+app.get('/', async (c) => {
+  // Basic health check
+  return c.json({ status: 'ok' })
 })
 
-const walletClient = createWalletClient({
-  chain: baseSepolia,
-  transport: http()
-})
-
-// Endpoints
-app.post('/configure', zValidator('json', ConfigureSchema), async (c) => {
-  const data = await c.req.json()
-  // Store configuration in vault
+// AI Chat endpoint
+app.post('/chat', async (c) => {
   let vault: Record<string, string> = {}
   try {
     vault = JSON.parse(process.env.secret || '{}')
-    vault[`config_${data.userId}`] = JSON.stringify(data)
-    // Would need to update vault here
-    return c.json({ success: true, message: 'Configuration saved' })
   } catch (e) {
-    console.error(e)
-    return c.json({ error: "Failed to save configuration" })
+    console.error('Failed to parse secrets:', e)
+    return c.json({ error: 'Failed to parse secrets' }, 500)
   }
-})
 
-app.get('/status/:userId', async (c) => {
-  const userId = c.req.param('userId')
-  let vault: Record<string, string> = {}
+  const apiKey = vault.REDPILL_API_KEY || ''
+  if (!apiKey) {
+    return c.json({ error: 'API key not configured' }, 401)
+  }
+
   try {
-    vault = JSON.parse(process.env.secret || '{}')
-    const config = vault[`config_${userId}`]
-    if (!config) {
-      return c.json({ error: "No configuration found" })
-    }
-    return c.json({ 
-      config: JSON.parse(config),
-      lastExecution: vault[`last_execution_${userId}`] || null
+    const body = await c.req.json()
+    const { message, model = 'gpt-4o' } = body
+
+    const response = await redPillService.chat({
+      message,
+      model,
+      apiKey
     })
-  } catch (e) {
-    console.error(e)
-    return c.json({ error: "Failed to get status" })
+
+    return c.json({ response })
+  } catch (error) {
+    console.error('Chat error:', error)
+    return c.json({ error: 'Failed to process chat request' }, 500)
   }
 })
 
-export default handle(app)
+// Transaction endpoints
+app.post('/transaction', async (c) => {
+  return await transactionService.handleTransaction(c)
+})
+
+app.post('/sign', async (c) => {
+  const body = await c.req.json()
+  body.type = 'sign'
+  return await transactionService.handleTransaction(c)
+})
+
+export default app

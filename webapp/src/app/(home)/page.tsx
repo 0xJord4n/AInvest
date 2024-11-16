@@ -1,44 +1,58 @@
-'use client'
+"use client";
 
-import { usePrivy } from '@privy-io/react-auth'
-import { RainbowButton } from "@/components/ui/rainbow-button"
-import Providers from '@/components/providers'
-import { motion } from "framer-motion"
-import { Bot, ShieldCheck, TrendingUp } from 'lucide-react'
-import { Card } from "@/components/ui/card"
+import { usePrivy } from "@privy-io/react-auth";
+import { RainbowButton } from "@/components/ui/rainbow-button";
+import Providers from "@/components/providers";
+import { motion } from "framer-motion";
+import { Bot, ShieldCheck, TrendingUp } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { redirect } from "next/navigation";
 
 function GradientBackground() {
   return (
     <div className="fixed inset-0 -z-10 bg-white dark:bg-gray-950">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80b3ff2a_1px,transparent_1px),linear-gradient(to_bottom,#80b3ff2a_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
     </div>
-  )
+  );
 }
 
-function FeatureCard({ icon: Icon, title, description }: { icon: any, title: string, description: string }) {
+function FeatureCard({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: any;
+  title: string;
+  description: string;
+}) {
   return (
     <Card className="p-6 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-blue-100 dark:border-blue-900">
       <Icon className="w-12 h-12 mb-4 text-blue-600 dark:text-blue-400" />
       <h3 className="text-xl font-bold mb-2">{title}</h3>
       <p className="text-gray-600 dark:text-gray-400">{description}</p>
     </Card>
-  )
+  );
 }
 
 function HomePage() {
-  const { login } = usePrivy()
+  const { login, authenticated } = usePrivy();
+
+  const loginOrRedirect = () => {
+    if (authenticated) redirect("/dashboard");
+    else login();
+  };
 
   return (
     <div className="min-h-screen">
       <GradientBackground />
-      
+
       {/* Header */}
       <header className="fixed top-0 w-full bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent">
             Ainvest
           </h1>
-          <RainbowButton onClick={login} className="px-4 py-2">
+          <RainbowButton onClick={loginOrRedirect} className="px-4 py-2">
             Sign In
           </RainbowButton>
         </div>
@@ -47,7 +61,7 @@ function HomePage() {
       {/* Hero Section */}
       <main className="container mx-auto px-4 pt-32 pb-16">
         <div className="max-w-4xl mx-auto text-center mb-16">
-          <motion.h2 
+          <motion.h2
             className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-500 bg-clip-text text-transparent"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -55,27 +69,31 @@ function HomePage() {
           >
             AI-Powered Secure Investing for the Web3 Era
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="text-xl text-gray-600 dark:text-gray-400 mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            Experience the future of investing with our advanced AI algorithms and blockchain security
+            Experience the future of investing with our advanced AI algorithms
+            and blockchain security
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <RainbowButton onClick={login} className="px-8 py-4 text-lg">
+            <RainbowButton
+              onClick={loginOrRedirect}
+              className="px-8 py-4 text-lg"
+            >
               Start Investing Securely
             </RainbowButton>
           </motion.div>
         </div>
 
         {/* Features Grid */}
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -109,7 +127,7 @@ function HomePage() {
             transition={{
               duration: 20,
               repeat: Infinity,
-              ease: "linear"
+              ease: "linear",
             }}
           />
           <motion.div
@@ -121,13 +139,13 @@ function HomePage() {
             transition={{
               duration: 25,
               repeat: Infinity,
-              ease: "linear"
+              ease: "linear",
             }}
           />
         </div>
       </main>
     </div>
-  )
+  );
 }
 
 export default function Home() {
@@ -135,5 +153,5 @@ export default function Home() {
     <Providers>
       <HomePage />
     </Providers>
-  )
+  );
 }
