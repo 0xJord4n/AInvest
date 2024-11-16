@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Strategy {
+  id          String    @id @default(cuid())
+  privyID     String
+  name        String
+  description String?
+  risk        Decimal
+  amount      Decimal
+  recurrency  Int
+  lastTrade   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  // A strategy can have many trades
+  trades      Trade[]
+}
+
+model Trade {
+  id         String   @id @default(cuid())
+  name       String
+  symbol     String
+  token      String
+  amount     Decimal
+  price      Decimal
+  chain      String
+  txHash     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  // A trade belongs to a strategy
+  strategy   Strategy @relation(fields: [strategyId], references: [id])
+  strategyId String
+}
