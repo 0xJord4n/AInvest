@@ -6,6 +6,7 @@ import { useSwipeable } from 'react-swipeable'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { keyframes } from '@emotion/react'
+import { useRouter } from 'next/navigation'
 
 const gradientAnimation = keyframes`
   0% { background-position: 0% 50%; }
@@ -48,7 +49,7 @@ const questions: {
     title: 'Why do you want to invest?',
     options: [
       { value: 'diversify', label: 'Diversify my income' },
-      { value: 'explore', label: 'Explore crypto without taking significant risks' },
+      { value: 'explore', label: 'Explore crypto without taking high risks' },
       { value: 'maximize', label: 'Maximize potential gains' },
     ],
   },
@@ -124,6 +125,7 @@ function QuestionScreen({ question, value, onChange }: {
 }
 
 function ProfileResult({ answers }: { answers: Record<string, string> }) {
+  const router = useRouter()
   const determineProfile = () => {
     let conservativePoints = 0;
     let balancedPoints = 0;
@@ -171,14 +173,17 @@ function ProfileResult({ answers }: { answers: Record<string, string> }) {
     }
   }
 
-  const result = determineProfile();
+  const result = determineProfile()
 
   return (
     <div className="flex flex-col items-center justify-center h-full w-full px-6 text-center">
       <h2 className="text-3xl font-bold mb-4 text-gray-800">Your Investor Profile</h2>
       <p className="text-2xl font-semibold mb-4 text-blue-600">{result.profile}</p>
       <p className="text-lg mb-8 text-gray-600">{result.strategy}</p>
-      <RainbowButton className="px-6 py-3 text-lg rounded-full shadow-md transition-all duration-300 transform hover:scale-105">
+      <RainbowButton 
+        className="px-6 py-3 text-lg rounded-full shadow-md transition-all duration-300 transform hover:scale-105"
+        onClick={() => router.push('/dashboard')}
+      >
         Start Investing
       </RainbowButton>
     </div>
@@ -189,6 +194,11 @@ export default function CryptoInvestmentQuestionnaire() {
   const [currentStep, setCurrentStep] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [direction, setDirection] = useState(0)
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const handleNext = () => {
     if (currentStep < questions.length - 1) {
@@ -231,8 +241,12 @@ export default function CryptoInvestmentQuestionnaire() {
 
   const isLastStep = currentStep === questions.length -1;
 
+  if (!isClient) {
+    return null
+  }
+
   return (
-    <div className="h-screen w-screen flex flex-col items-center justify-between bg-gradient-to-br from-blue-100 via-blue-200 to-blue-300 text-gray-800 overflow-hidden">
+    <div className="h-screen w-screen flex flex-col items-center justify-between bg-gradient-to-br from-white via-gray-100 to-gray-200 text-gray-800 overflow-hidden">
       <div className="w-full h-full flex flex-col items-center justify-between" {...swipeHandlers}>
         <div className="w-full flex-grow flex items-center justify-center overflow-hidden">
           <AnimatePresence initial={false} custom={direction}>
@@ -263,7 +277,7 @@ export default function CryptoInvestmentQuestionnaire() {
           </AnimatePresence>
         </div>
 
-        <div className="w-full px-6 py-8 bg-gradient-to-br from-blue-300 via-blue-200 to-blue-100 bg-opacity-80 backdrop-blur-md">
+        <div className="w-full px-6 py-8 bg-gradient-to-br from-white via-gray-100 to-gray-200 bg-opacity-80 backdrop-blur-md">
           <div className="flex justify-between items-center mb-4">
             <Button 
               onClick={handlePrevious}
