@@ -64,6 +64,8 @@ import SparklesText from "@/components/ui/sparkles-text";
 import Link from "next/link";
 import { ChatDialog } from "@/components/ui/chat-dialog";
 import { formatUnits } from "viem";
+import { useInchTxs } from '@/hooks/useInchTxs';
+import { TransactionsList } from "@/components/TransactionsList";
 
 interface PortfolioData {
   result: {
@@ -84,6 +86,22 @@ interface PortfolioData {
     };
   }[];
   total_balance: number;
+}
+
+interface Transaction {
+  timeMs: number;
+  details: {
+    txHash: string;
+    type: string;
+    status: string;
+    feeInWei: string;
+  };
+  tokenActions: {
+    address: string;
+    amount: string;
+    direction: string;
+    standard: string;
+  }[];
 }
 
 const transactionData = [
@@ -210,6 +228,7 @@ const assets = [
   },
 ];
 
+
 export default function Component() {
   const [selectedTab, setSelectedTab] = useState("portfolio");
   const [hasUnread, setHasUnread] = useState(true);
@@ -229,6 +248,7 @@ export default function Component() {
 
   const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { transactions, isLoading: txsLoading, fetchTransactions } = useInchTxs();
 
   useEffect(() => {
     const fetchPortfolioData = async () => {
@@ -601,7 +621,7 @@ export default function Component() {
               <Tabs defaultValue="tokens" className="space-y-4">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="tokens">Tokens</TabsTrigger>
-                  <TabsTrigger value="transactions">Transactions</TabsTrigger>
+                  <TabsTrigger value="transactions" onClick={fetchTransactions}>Transactions</TabsTrigger>
                 </TabsList>
                 <TabsContent value="tokens" className="space-y-4">
                   <ScrollArea className="h-[calc(100vh-460px)]">
@@ -646,9 +666,7 @@ export default function Component() {
                   </ScrollArea>
                 </TabsContent>
                 <TabsContent value="transactions">
-                  <div className="text-center text-muted-foreground py-8">
-                    No recent transactions
-                  </div>
+                  <TransactionsList transactions={transactions} />
                 </TabsContent>
               </Tabs>
             </motion.div>
