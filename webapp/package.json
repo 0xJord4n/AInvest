@@ -11,6 +11,7 @@
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@lottiefiles/react-lottie-player": "^3.5.4",
+    "@prisma/client": "5.22.0",
     "@privy-io/react-auth": "^1.94.2",
     "@privy-io/server-auth": "^1.16.3",
     "@pushprotocol/restapi": "^1.7.29",
