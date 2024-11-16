@@ -7,6 +7,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { keyframes } from '@emotion/react'
 import { useRouter } from 'next/navigation'
+import Ripple from "@/components/ui/ripple";
+import { cn } from "@/lib/utils";
+import AnimatedGridPattern from "@/components/ui/animated-grid-pattern";
 
 const gradientAnimation = keyframes`
   0% { background-position: 0% 50%; }
@@ -247,6 +250,16 @@ export default function CryptoInvestmentQuestionnaire() {
 
   return (
     <div className="h-screen w-screen flex flex-col items-center justify-between bg-gradient-to-br from-white via-gray-100 to-gray-200 text-gray-800 overflow-hidden">
+      <AnimatedGridPattern
+        numSquares={30}
+        maxOpacity={0.1}
+        duration={3}
+        repeatDelay={1}
+        className={cn(
+          "[mask-image:radial-gradient(500px_circle_at_center,white,transparent)]",
+          "inset-x-0 inset-y-[-30%] h-[200%] skew-y-12",
+        )}
+      />
       <div className="w-full h-full flex flex-col items-center justify-between" {...swipeHandlers}>
         <div className="w-full flex-grow flex items-center justify-center overflow-hidden">
           <AnimatePresence initial={false} custom={direction}>
