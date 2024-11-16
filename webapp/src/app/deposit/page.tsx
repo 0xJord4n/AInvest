@@ -9,6 +9,12 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import SparklesText from "@/components/ui/sparkles-text"
+import usdcLogo from '@/../public/usd-coin-usdc-logo.png'
+import visaLogo from '@/../public/visa-svgrepo-com.svg'
+import mastercardLogo from '@/../public/mc_symbol.svg'
+import paypalLogo from '@/../public/paypal-svgrepo-com.svg'
+import applepayLogo from '@/../public/apple-pay-logo-svgrepo-com.svg'
+import googlepayLogo from '@/../public/google-pay-primary-logo-logo-svgrepo-com.svg'
 
 export default function Component() {
   const [copied, setCopied] = useState(false)
@@ -53,10 +59,11 @@ export default function Component() {
               transition={{ type: 'spring', stiffness: 260, damping: 20 }}
             >
               <Image
-                src="/placeholder.svg?height=64&width=64"
+                src={usdcLogo}
                 alt="USDC Logo"
                 width={64}
                 height={64}
+                quality={10}
                 className="rounded-full"
               />
             </motion.div>
@@ -81,10 +88,10 @@ export default function Component() {
                     Send/withdraw USDC to the address below and select{' '}
                     <span className="bg-blue-500/20 px-2 py-1 rounded text-sm">
                       <Image
-                        src="/placeholder.svg?height=16&width=16"
-                        alt="Base"
-                        width={16}
+                        src="https://cryptologos.cc/logos/usd-coin-usdc-logo.svg"
                         height={16}
+                        width={16}
+                        alt="Base"
                         className="inline mr-1 rounded-full"
                       />
                       Base
@@ -126,10 +133,16 @@ export default function Component() {
             {['Visa', 'Mastercard', 'PayPal', 'Apple Pay', 'Google Pay'].map((method) => (
               <div key={method} className="bg-muted p-2 rounded flex items-center justify-center">
                 <Image
-                  src="/placeholder.svg?height=24&width=24"
+                  src={
+                    method === 'Visa' ? visaLogo :
+                    method === 'Mastercard' ? mastercardLogo :
+                    method === 'PayPal' ? paypalLogo :
+                    method === 'Apple Pay' ? applepayLogo :
+                    googlepayLogo
+                  }
                   alt={method}
-                  width={24}
-                  height={24}
+                  width={56}
+                  height={56}
                 />
               </div>
             ))}
