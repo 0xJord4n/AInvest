@@ -7,7 +7,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { keyframes } from '@emotion/react'
 import { useRouter } from 'next/navigation'
-import Ripple from "@/components/ui/ripple";
 import { cn } from "@/lib/utils";
 import AnimatedGridPattern from "@/components/ui/animated-grid-pattern";
 
