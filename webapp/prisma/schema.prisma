@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Recurrency {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+model Strategy {
+  id          String     @id @default(cuid())
+  privyID     String
+  name        String
+  description String?
+  risk        Decimal
+  amount      Decimal
+  recurrency  Recurrency
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  // A strategy can have many trades
+  trades      Trade[]
+}
+
+model Trade {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  // A trade belongs to a strategy
+  strategy    Strategy @relation(fields: [strategyId], references: [id])
+  strategyId  String
+  // A trade can have many orders
+  orders      Order[]
+}
+
+model Order {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  // An order belongs to a trade
+  trade       Trade    @relation(fields: [tradeId], references: [id])
+  tradeId     String
+  // An order can have many executions
+}
