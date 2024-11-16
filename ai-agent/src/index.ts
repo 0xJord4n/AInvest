@@ -90,4 +90,7 @@ app.post("/sign", async (c) => {
   }
 });
 
-export default app;
+export default {
+  port: 5000,
+  fetch: app.fetch,
+};

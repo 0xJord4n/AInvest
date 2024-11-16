@@ -67,7 +67,7 @@ describe("Privy Transaction Functionality", () => {
       privyService.executeTransaction(mockWallet, {
         to: undefined as any, // Testing missing parameters
         value: undefined as any,
-        data: "0x",
+        data: undefined as any,
       })
     ).rejects.toThrow();
   });
