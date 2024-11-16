@@ -15,8 +15,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         },
         loginMethods: ["email", "wallet", "google", "apple", "twitter"],
         // Create embedded wallets for users who don't have a wallet
+
         embeddedWallets: {
           createOnLogin: "all-users",
+          noPromptOnSignature: true,
+          showWalletUIs: false,
         },
       }}
     >

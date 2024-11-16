@@ -1,6 +1,6 @@
 "use client";
 
-import { usePrivy } from "@privy-io/react-auth";
+import { useLogin, usePrivy } from "@privy-io/react-auth";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import Providers from "@/components/providers";
 import { motion } from "framer-motion";
@@ -34,10 +34,16 @@ function FeatureCard({
   );
 }
 
-function HomePage() {
-  const { login, authenticated } = usePrivy();
+export default function HomePage() {
+  const { authenticated } = usePrivy();
+  const { login } = useLogin({
+    onComplete: (user, isNewUser) => {
+      if (isNewUser) redirect("/form");
+      else redirect("/dashboard");
+    },
+  });
 
-  const loginOrRedirect = () => {
+  const loginOrRedirect = async () => {
     if (authenticated) redirect("/dashboard");
     else login();
   };
@@ -145,13 +151,5 @@ function HomePage() {
         </div>
       </main>
     </div>
-  );
-}
-
-export default function Home() {
-  return (
-    <Providers>
-      <HomePage />
-    </Providers>
   );
 }
