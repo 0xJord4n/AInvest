@@ -137,7 +137,7 @@ export default function Component() {
           {notifications.map((notification) => (
             <div
               key={notification.id}
-              className="flex gap-4 p-4 rounded-lg bg-card border transition-colors hover:bg-accent"
+              className="flex gap-4 p-4 rounded-lg bg-card border transition-colors hover:bg-blue-100 dark:hover:bg-blue-900"
             >
               <div className={`${notification.iconBg} p-2 rounded-full text-foreground flex items-center justify-center h-10 w-10 flex-shrink-0`}>
                 {notification.icon}
@@ -198,7 +198,7 @@ export default function Component() {
         </div>
       </header>
 
-      <main className="flex-1 p-4 pb-20 overflow-hidden">
+      <main className="flex-1 p-4 pb-24 overflow-hidden">
         <AnimatePresence mode="wait">
           {selectedTab === 'portfolio' ? (
             <motion.div
@@ -226,7 +226,7 @@ export default function Component() {
                   <CardTitle className="flex items-center justify-between">
                     <div>
                       <div className="text-3xl font-bold">${totalValue.toLocaleString()}</div>
-                      <div className="flex items-center text-sm font-normal text-green-500">
+                      <div className="flex items-center text-sm font-normal text-blue-500">
                         <ArrowUpRight className="mr-1 h-4 w-4" />
                         {changePercentage.toFixed(2)}% (${changeValue.toFixed(2)})
                       </div>
@@ -246,8 +246,8 @@ export default function Component() {
                         <AreaChart data={timeFrames[selectedTimeFrame]}>
                           <defs>
                             <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8}/>
-                              <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+                              <stop offset="5%" stopColor="#2563eb" stopOpacity={0.8}/>
+                              <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
                             </linearGradient>
                           </defs>
                           <XAxis 
@@ -264,7 +264,7 @@ export default function Component() {
                           <Area 
                             type="monotone" 
                             dataKey="value" 
-                            stroke="#22c55e" 
+                            stroke="#2563eb" 
                             fillOpacity={1} 
                             fill="url(#colorValue)" 
                           />
@@ -279,7 +279,7 @@ export default function Component() {
                         variant={selectedTimeFrame === timeFrame ? "default" : "outline"}
                         size="sm"
                         onClick={() => setSelectedTimeFrame(timeFrame as '1H' | '1D' | '1W' | '1M' | '1Y' | 'Max')}
-                        className={`px-3 py-1 text-xs ${selectedTimeFrame === timeFrame ? 'bg-primary text-primary-foreground' : 'bg-background text-foreground'}`}
+                        className={`px-3 py-1 text-xs ${selectedTimeFrame === timeFrame ? 'bg-blue-600 text-white' : 'bg-background text-foreground'}`}
                       >
                         {timeFrame}
                       </Button>
@@ -291,7 +291,7 @@ export default function Component() {
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <Button
                   variant="default"
-                  className="w-full py-6 text-lg"
+                  className="w-full py-6 text-lg bg-blue-600 text-white hover:bg-blue-700"
                   onClick={() => toast.success('Swap initiated!')}
                 >
                   <ArrowLeftRight className="mr-2 h-5 w-5" />
@@ -299,7 +299,7 @@ export default function Component() {
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full py-6 text-lg"
+                  className="w-full py-6 text-lg border-blue-200 dark:border-blue-800"
                   onClick={() => toast.success('Transfer initiated!')}
                 >
                   <Bridge className="mr-2 h-5 w-5" />
@@ -327,7 +327,7 @@ export default function Component() {
                             </div>
                             <div className="text-right">
                               <p className="font-medium">{asset.price}</p>
-                              <p className={`text-sm ${asset.priceChange.startsWith('+') ? 'text-green-500' : 'text-red-500'}`}>
+                              <p className={`text-sm ${asset.priceChange.startsWith('+') ? 'text-blue-500' : 'text-red-500'}`}>
                                 {asset.priceChange}
                               </p>
                             </div>
@@ -361,46 +361,46 @@ export default function Component() {
       </main>
 
       <footer className="fixed bottom-0 left-0 right-0 border-t bg-background">
-        <div className="max-w-md mx-auto px-8 py-4 flex justify-between items-center">
+        <div className="max-w-md mx-auto px-8 py-6 flex justify-between items-center">
           <Button
             variant="ghost"
-            className={`flex flex-col items-center gap-1 ${selectedTab === 'portfolio' ? 'text-primary' : 'text-muted-foreground'}`}
+            className={`flex flex-col items-center gap-2 ${selectedTab === 'portfolio' ? 'text-primary' : 'text-muted-foreground'}`}
             onClick={() => setSelectedTab('portfolio')}
           >
-            <Wallet2 className="w-6 h-6" />
-            <span className="text-xs">Portfolio</span>
+            <Wallet2 className="w-7 h-7" />
+            <span className="text-sm">Portfolio</span>
           </Button>
 
           <Button
-            className="bg-primary text-primary-foreground rounded-full px-6 py-2 flex items-center gap-2 hover:bg-primary/90"
+            className="bg-blue-600 text-white rounded-full px-6 py-3 flex items-center gap-2 hover:bg-blue-700"
             onClick={() => toast.success('New investment initiated!')}
           >
-            <Plus className="w-4 h-4" />
-            <span>New investment</span>
+            <Plus className="w-5 h-5" />
+            <span className="text-base">New investment</span>
           </Button>
 
           <Button
             variant="ghost"
-            className={`flex flex-col items-center gap-1 relative ${selectedTab === 'notifications' ? 'text-primary' : 'text-muted-foreground'}`}
+            className={`flex flex-col items-center gap-2 relative ${selectedTab === 'notifications' ? 'text-primary' : 'text-muted-foreground'}`}
             onClick={() => setSelectedTab('notifications')}
           >
             <div className="relative">
-              <Bell className="w-6 h-6" />
+              <Bell className="w-7 h-7" />
               {hasUnread && (
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                   4
                 </span>
               )}
             </div>
-            <span className="text-xs">Alerts</span>
+            <span className="text-sm">Alerts</span>
           </Button>
         </div>
       </footer>
       <Button
         onClick={() => setChatOpen(true)}
-        className="fixed bottom-20 right-4 rounded-full w-12 h-12 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
+        className="fixed bottom-24 right-4 rounded-full w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
       >
-        <MessageSquare size={24} />
+        <MessageSquare size={28} />
       </Button>
       <Dialog open={chatOpen} onOpenChange={setChatOpen}>
         {/* Chatbot Dialog content here */}
