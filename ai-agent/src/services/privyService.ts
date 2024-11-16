@@ -1,28 +1,32 @@
-import { type Address, type Hash } from 'viem'
+import { type Address } from 'viem'
 import { type PrivyPersonalSignResponse, type PrivySignTransactionResponse } from '../types/transaction'
+import { PrivyAuthHelper } from '../utils/privyAuth'
 
 interface PrivyConfig {
   appId: string
   appSecret: string
-  authSignature: string
 }
 
 export class PrivyService {
   private baseUrl = 'https://auth.privy.io/api/v1'
   private config: PrivyConfig
+  private authHelper: PrivyAuthHelper
 
   constructor(config: PrivyConfig) {
     this.config = config
+    this.authHelper = PrivyAuthHelper.fromSecrets()
   }
 
   private async makeRequest(endpoint: string, data: any) {
+    const signature = this.authHelper.generateAuthSignature(data)
+
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${Buffer.from(`${this.config.appId}:${this.config.appSecret}`).toString('base64')}`,
         'privy-app-id': this.config.appId,
-        'privy-authorization-signature': this.config.authSignature
+        'privy-authorization-signature': signature
       },
       body: JSON.stringify(data)
     })

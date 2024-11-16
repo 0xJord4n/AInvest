@@ -1,26 +1,55 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import app from '../src'
 import { type Address } from 'viem'
+import { PrivyService } from '../src/services/privyService'
+import { PrivyAuthHelper } from '../src/utils/privyAuth'
 
 describe('Privy Transaction Functionality', () => {
+  let privyService: PrivyService
+  const mockWallet: Address = '0xC5227Cb20493b97bb02fADb20360fe28F52E2eff'
+
   beforeEach(() => {
-    // use secrets from secrets/default.json
     const secrets = require('../secrets/default.json')
-    
     process.env.secret = JSON.stringify(secrets)
+
+    privyService = new PrivyService({
+      appId: secrets.PRIVY_APP_ID,
+      appSecret: secrets.PRIVY_APP_SECRET
+    })
+  })
+
+  describe('Authorization', () => {
+    it('should generate valid authorization signatures', async () => {
+      const testRequest = {
+        address: mockWallet,
+        chain_type: 'ethereum',
+        method: 'eth_signTransaction',
+        params: {
+          transaction: {
+            to: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
+            value: '0.1',
+            data: '0x'
+          }
+        }
+      }
+
+      const authHelper = PrivyAuthHelper.fromSecrets()
+      const signature = authHelper.generateAuthSignature(testRequest)
+      
+      expect(signature).toBeDefined()
+      expect(typeof signature).toBe('string')
+      expect(signature).toMatch(/^[A-Za-z0-9+/]+=*$/) // Base64 validation
     })
   })
 
   it('should handle transaction signing requests', async () => {
-    const testWallet: Address = '0xC5227Cb20493b97bb02fADb20360fe28F52E2eff'
-    
     const res = await app.request('/transaction', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        walletAddress: testWallet,
+        walletAddress: mockWallet,
         to: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
         value: '0.1',
         data: '0x'
@@ -35,15 +64,13 @@ describe('Privy Transaction Functionality', () => {
   })
 
   it('should handle message signing requests', async () => {
-    const testWallet: Address = '0xC5227Cb20493b97bb02fADb20360fe28F52E2eff'
-    
     const res = await app.request('/sign', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        walletAddress: testWallet,
+        walletAddress: mockWallet,
         data: 'Test message to sign'
       })
     })
@@ -66,3 +93,5 @@ describe('Privy Transaction Functionality', () => {
 
     expect(res.status).toBe(400)
   })
+
+})
