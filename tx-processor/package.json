@@ -13,7 +13,9 @@
     "@1inch/fusion-sdk": "2",
     "@prisma/client": "5.22.0",
     "@privy-io/server-auth": "^1.16.3",
+    "@pushprotocol/restapi": "^1.7.29",
     "axios": "^1.7.7",
+    "ethers": "5",
     "viem": "^2.21.45"
   }
 }

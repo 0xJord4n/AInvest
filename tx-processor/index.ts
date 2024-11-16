@@ -1,12 +1,12 @@
-import { PrivyClient, type WalletWithMetadata } from "@privy-io/server-auth";
+import { PrivyClient } from "@privy-io/server-auth";
 import {
   createPublicClient,
   createWalletClient,
   encodeFunctionData,
   erc20Abi,
+  formatUnits,
   http,
   maxUint256,
-  parseEther,
   toHex,
   type Address,
   type Hex,
@@ -14,6 +14,14 @@ import {
 import { base } from "viem/chains";
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
+import { env } from "bun";
+import { CONSTANTS, PushAPI } from "@pushprotocol/restapi";
+import { ethers } from "ethers";
+
+const notifierSigner = new ethers.Wallet(env.NOTIFIER_PRIVATE_KEY as string);
+const notifier = await PushAPI.initialize(notifierSigner, {
+  env: CONSTANTS.ENV.STAGING,
+});
 
 const walletClient = createWalletClient({
   chain: base,
@@ -26,12 +34,11 @@ const publicClient = createPublicClient({
 });
 
 const privy = new PrivyClient(
-  "cm3ivfv2c037nptk4s28yyxhv",
-  "5qixSZZjftkjpFhYQtoKuD1eeGuhFzPkxUWDsorgex6KKaNmFc2mCYH4z47FUTZgXB6UmLWUwnDpo6y1J59jfzW7",
+  env.PRIVY_APP_ID as string,
+  env.PRIVY_APP_SECRET as string,
   {
     walletApi: {
-      authorizationPrivateKey:
-        "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgTEFuK2ivk6HXlSOsEF5HtAXlsjJRm+R3FUJpc+pDk5ihRANCAAR94VxYLqH5TGCB3wmAuHs77SI8CdicMBb3Yh23VBh6PqVjCD38mE30j4BGvNbWMkt9rBXRjg4oQiJumLm7sWP7",
+      authorizationPrivateKey: env.PRIVY_PRIVATE_KEY as string,
     },
   }
 );
@@ -101,7 +108,7 @@ const buildTx = async (
         gasPrice: string;
       };
     }>("https://api.1inch.dev/swap/v6.0/8453/swap", {
-      headers: { Authorization: "Bearer 0osOjBZYxF8ggdzjWf0DJHk38tidsEB8" },
+      headers: { Authorization: `Bearer ${env.INCH_API_KEY}` },
       params: {
         src: fromToken,
         dst: toToken,
@@ -159,10 +166,7 @@ while (true) {
             encodeFunctionData({
               abi: erc20Abi,
               functionName: "approve",
-              args: [
-                "0x111111125421ca6dc452d289314280a0f8842a65",
-                maxUint256cle,
-              ],
+              args: ["0x111111125421ca6dc452d289314280a0f8842a65", maxUint256],
             })
           );
 
@@ -177,13 +181,20 @@ while (true) {
       const tx = await sendTransaction(
         account,
         "0x111111125421ca6dc452d289314280a0f8842a65",
-        BigInt(swapData.value),
-        swapData.data as Hex
+        BigInt(swapData!.value),
+        swapData!.data as Hex
       );
 
       console.log("Trading", tx);
       await publicClient.waitForTransactionReceipt({ hash: tx });
       console.log("Traded", tx);
+
+      await notifier.channel.send([account], {
+        notification: {
+          title: "New investment",
+          body: `Successfully bought $${formatUnits(amount, 6)} of $AERO`,
+        },
+      });
 
       await db.strategy.update({
         where: {
