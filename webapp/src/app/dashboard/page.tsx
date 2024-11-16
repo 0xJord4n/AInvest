@@ -52,7 +52,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { usePrivy, useWallets } from "@privy-io/react-auth";
+import {
+  useDelegatedActions,
+  usePrivy,
+  useWallets,
+  WalletWithMetadata,
+} from "@privy-io/react-auth";
 import { redirect } from "next/navigation";
 import { Notification, UserChannel } from "@/types";
 import SparklesText from "@/components/ui/sparkles-text";
@@ -157,7 +162,31 @@ export default function Component() {
   const totalValue = 5277.26;
   const changePercentage = 12.7;
   const changeValue = 595.74;
-  const { logout } = usePrivy();
+  const { logout, user: privyUser, authenticated, ready } = usePrivy();
+  const { wallets } = useWallets();
+  const { delegateWallet } = useDelegatedActions();
+
+  const onDelegate = async () => {
+    const walletToDelegate = wallets.find(
+      (wallet) => wallet.walletClientType === "privy"
+    );
+
+    // Check if the wallet to delegate by inspecting the user's linked accounts
+    const isAlreadyDelegated = !!privyUser?.linkedAccounts.find(
+      (account: WalletWithMetadata) =>
+        account.type === "wallet" &&
+        account.address &&
+        account.delegated === true
+    );
+
+    console.log("isAlreadyDelegated", isAlreadyDelegated);
+    console.log("walletToDelegate", walletToDelegate);
+    if (!walletToDelegate || isAlreadyDelegated) return;
+    await delegateWallet({
+      address: walletToDelegate.address,
+      chainType: "solana",
+    });
+  };
 
   const handleMarkAllRead = () => {
     setHasUnread(false);
@@ -272,6 +301,15 @@ export default function Component() {
     await logout();
     redirect("/");
   };
+
+  useEffect(() => {
+    if (!authenticated || !ready || wallets.length == 0) {
+      return;
+    }
+
+    console.log("User is authenticated and ready to go!");
+    onDelegate();
+  }, [authenticated, ready, wallets.length]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">

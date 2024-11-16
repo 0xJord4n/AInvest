@@ -1,12 +1,19 @@
 "use client";
 
-import { useLogin, usePrivy } from "@privy-io/react-auth";
+import {
+  useDelegatedActions,
+  useLogin,
+  usePrivy,
+  useWallets,
+  WalletWithMetadata,
+} from "@privy-io/react-auth";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import Providers from "@/components/providers";
 import { motion } from "framer-motion";
 import { Bot, ShieldCheck, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { redirect } from "next/navigation";
+import { useEffect } from "react";
 
 function GradientBackground() {
   return (
@@ -35,11 +42,13 @@ function FeatureCard({
 }
 
 export default function HomePage() {
-  const { authenticated } = usePrivy();
+  const { authenticated, ready } = usePrivy();
+
   const { login } = useLogin({
     onComplete: (user, isNewUser) => {
-      if (isNewUser) redirect("/form");
-      else redirect("/dashboard");
+      if (isNewUser) {
+        redirect("/form");
+      } else redirect("/dashboard");
     },
   });
 

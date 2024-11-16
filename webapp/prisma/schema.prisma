@@ -13,48 +13,33 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Recurrency {
-  DAILY
-  WEEKLY
-  MONTHLY
-  YEARLY
-}
-
 model Strategy {
-  id          String     @id @default(cuid())
+  id          String    @id @default(cuid())
   privyID     String
   name        String
   description String?
   risk        Decimal
   amount      Decimal
-  recurrency  Recurrency
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  recurrency  Int
+  lastTrade   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   // A strategy can have many trades
   trades      Trade[]
 }
 
 model Trade {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(cuid())
+  name       String
+  symbol     String
+  token      String
+  amount     Decimal
+  price      Decimal
+  chain      String
+  txHash     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   // A trade belongs to a strategy
-  strategy    Strategy @relation(fields: [strategyId], references: [id])
-  strategyId  String
-  // A trade can have many orders
-  orders      Order[]
-}
-
-model Order {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  // An order belongs to a trade
-  trade       Trade    @relation(fields: [tradeId], references: [id])
-  tradeId     String
-  // An order can have many executions
+  strategy   Strategy @relation(fields: [strategyId], references: [id])
+  strategyId String
 }
