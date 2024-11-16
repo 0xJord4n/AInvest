@@ -6,7 +6,7 @@ import { PrivyAuthHelper } from '../src/utils/privyAuth'
 
 describe('Privy Transaction Functionality', () => {
   let privyService: PrivyService
-  const mockWallet: Address = '0xC5227Cb20493b97bb02fADb20360fe28F52E2eff'
+  const mockWallet: Address = '0xe5634ed0149037E935F6B09bB1864865500198E5'
 
   beforeEach(() => {
     const secrets = require('../secrets/default.json')
