@@ -1,8 +1,9 @@
 import { Hono } from "hono";
 import { RedPillAI } from "./services/redpill";
 import { TransactionHandler } from "./services/transactions";
-import { TappdClient } from '@phala/dstack-sdk';
-import 'dotenv/config';
+import { TappdClient } from "@phala/dstack-sdk";
+import "dotenv/config";
+import secrets from "../secrets/default.json";
 
 const app = new Hono();
 
@@ -11,7 +12,8 @@ const redPillService = new RedPillAI();
 const transactionService = new TransactionHandler();
 
 // Initialize TappdClient
-const endpoint = process.env.DSTACK_SIMULATOR_ENDPOINT || 'http://localhost:8090';
+const endpoint =
+  process.env.DSTACK_SIMULATOR_ENDPOINT || "http://localhost:8090";
 const tappdClient = new TappdClient(endpoint);
 
 app.get("/", async (c) => {
@@ -26,13 +28,12 @@ app.post("/chat", async (c) => {
   try {
     // Derive a key for the chat endpoint
     derivedKey = await tappdClient.deriveKey("/chat", "secure-chat");
-    vault = JSON.parse(process.env.secret || "{}");
   } catch (e) {
     console.error("Failed to parse secrets or derive key:", e);
     return c.json({ error: "Failed to initialize secure context" }, 500);
   }
 
-  const apiKey = vault.REDPILL_API_KEY || "";
+  const apiKey = secrets.REDPILL_API_KEY || "";
   if (!apiKey) {
     return c.json({ error: "API key not configured" }, 401);
   }
@@ -47,7 +48,7 @@ app.post("/chat", async (c) => {
       apiKey,
     });
 
-    return c.json({ 
+    return c.json({
       response,
       derivedKey: derivedKey.asUint8Array(),
     });
