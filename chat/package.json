@@ -1,0 +1,15 @@
+{
+  "name": "chat",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@pushprotocol/restapi": "^1.7.29",
+    "ethers": "5"
+  }
+}
