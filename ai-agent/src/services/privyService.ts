@@ -32,7 +32,7 @@ export class PrivyService {
     })
 
     if (!response.ok) {
-      throw new Error(`Privy API error: ${response.statusText}`)
+      throw new Error(`Privy API error: ${await response.text()}`)
     }
 
     return response.json()

@@ -1,18 +1,26 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSwipeable } from 'react-swipeable'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { keyframes } from '@emotion/react'
 import { useRouter } from 'next/navigation'
+import { cn } from "@/lib/utils";
+import AnimatedGridPattern from "@/components/ui/animated-grid-pattern";
+import type { ConfettiRef } from "@/components/ui/confetti";
+import Confetti from "@/components/ui/confetti";
 
 const gradientAnimation = keyframes`
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 `
+
+export function ConfettiDemo() {
+    const confettiRef = useRef<ConfettiRef>(null);
+  }
 
 // Add the RainbowButton component
 const RainbowButton = ({ className, ...props }: React.ComponentProps<typeof Button>) => (
@@ -125,6 +133,7 @@ function QuestionScreen({ question, value, onChange }: {
 }
 
 function ProfileResult({ answers }: { answers: Record<string, string> }) {
+  const confettiRef = useRef<ConfettiRef>(null);
   const router = useRouter()
   const determineProfile = () => {
     let conservativePoints = 0;
@@ -178,6 +187,10 @@ function ProfileResult({ answers }: { answers: Record<string, string> }) {
   return (
     <div className="flex flex-col items-center justify-center h-full w-full px-6 text-center">
       <h2 className="text-3xl font-bold mb-4 text-gray-800">Your Investor Profile</h2>
+      <Confetti
+        ref={confettiRef}
+        className="absolute left-0 top-0 z-0 size-full"
+      />
       <p className="text-2xl font-semibold mb-4 text-blue-600">{result.profile}</p>
       <p className="text-lg mb-8 text-gray-600">{result.strategy}</p>
       <RainbowButton 
@@ -247,6 +260,16 @@ export default function CryptoInvestmentQuestionnaire() {
 
   return (
     <div className="h-screen w-screen flex flex-col items-center justify-between bg-gradient-to-br from-white via-gray-100 to-gray-200 text-gray-800 overflow-hidden">
+      <AnimatedGridPattern
+        numSquares={30}
+        maxOpacity={0.1}
+        duration={3}
+        repeatDelay={1}
+        className={cn(
+          "[mask-image:radial-gradient(500px_circle_at_center,white,transparent)]",
+          "inset-x-0 inset-y-[-30%] h-[200%] skew-y-12",
+        )}
+      />
       <div className="w-full h-full flex flex-col items-center justify-between" {...swipeHandlers}>
         <div className="w-full flex-grow flex items-center justify-center overflow-hidden">
           <AnimatePresence initial={false} custom={direction}>
