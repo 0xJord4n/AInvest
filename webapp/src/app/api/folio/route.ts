@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import axios from 'axios';
 
-const INCH_API_KEY = process.env.NEXT_PUBLIC_1INCH_API_KEY;
+const INCH_API_KEY = process.env.INCH_API_KEY;
 const INCH_API_URL = 'https://api.1inch.dev/portfolio/portfolio/v4/overview/erc20';
-// TODO: implementer Value et details 
+const TOKEN_API_URL = 'https://api.1inch.dev/token/v1.2/8453/custom';
 
 export async function GET() {
   try {
     const cookieStore = cookies();
-    const walletAddress = cookieStore.get('wallet_address');
-
+    const walletAddress = (await cookieStore).get('wallet_address');
     if (!walletAddress) {
       return NextResponse.json(
         { error: 'Wallet address not found' },
@@ -24,73 +24,63 @@ export async function GET() {
       );
     }
 
-    // Get current portfolio value
-    const currentValueResponse = await fetch(
-      `${INCH_API_URL}/overview/erc20/current_value?addresses=${walletAddress.value}&chain_id=8453`,
-      {
-        headers: {
-          'Authorization': `Bearer ${INCH_API_KEY}`,
-          'Accept': 'application/json',
-        },
-      }
-    );
-
-    if (!currentValueResponse.ok) {
-      throw new Error(`1inch API error: ${currentValueResponse.statusText}`);
-    }
-
-    const currentValue = await currentValueResponse.json();
-
-    // Get profit and loss data
-    const now = new Date();
-    const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
-
-    const pnlResponse = await fetch(
-      `${INCH_API_URL}/overview/erc20/profit_and_loss?addresses=${walletAddress.value}&chain_id=8453&from_timestamp=${thirtyDaysAgo.toISOString()}&to_timestamp=${now.toISOString()}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${INCH_API_KEY}`,
-          'Accept': 'application/json',
-        },
-      }
-    );
-
-    if (!pnlResponse.ok) {
-      throw new Error(`1inch API error: ${pnlResponse.statusText}`);
-    }
-
-    const pnlData = await pnlResponse.json();
-
-    // Get token details
-    const detailsResponse = await fetch(
-      `${INCH_API_URL}/overview/erc20/details?addresses=${walletAddress.value}&chain_id=8453`,
-      {
-        headers: {
-          'Authorization': `Bearer ${INCH_API_KEY}`,
-          'Accept': 'application/json',
-        },
-      }
-    );
-
-    if (!detailsResponse.ok) {
-      throw new Error(`1inch API error: ${detailsResponse.statusText}`);
-    }
-
-    const tokenDetails = await detailsResponse.json();
-
-    // Combine all data
-    const portfolioData = {
-      currentValue,
-      pnlData,
-      tokenDetails,
+    const portfolioUrl = `${INCH_API_URL}/details`;
+    const portfolioConfig = {
+      headers: {
+        Authorization: `Bearer ${INCH_API_KEY}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      params: {
+        addresses: walletAddress.value,
+        chain_id: '8453',
+        timerange: '3years',
+        closed: true,
+        closed_threshold: 1,
+        use_cache: 'false',
+      },
     };
 
-    return NextResponse.json(portfolioData);
+    const portfolioResponse = await axios.get(portfolioUrl, portfolioConfig);
 
+    if (portfolioResponse.status !== 200) {
+      console.error('Fetch error:', portfolioResponse.status, portfolioResponse.data);
+      throw new Error('Failed to fetch portfolio data');
+    }
+
+    const tokenAddresses = portfolioResponse.data.result.map((token: any) => token.contract_address);
+
+    const tokenDetailsConfig = {
+      headers: {
+        Authorization: `Bearer ${INCH_API_KEY}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      params: {
+        addresses: tokenAddresses,
+      },
+    };
+
+    const tokenDetailsResponse = await axios.get(TOKEN_API_URL, tokenDetailsConfig);
+
+    if (tokenDetailsResponse.status !== 200) {
+      console.error('Fetch error:', tokenDetailsResponse.status, tokenDetailsResponse.data);
+      throw new Error('Failed to fetch token details');
+    }
+
+    const combinedData = portfolioResponse.data.result.map((token: any) => {
+      const tokenDetails = tokenDetailsResponse.data[token.contract_address];
+      return {
+        ...token,
+        tokenDetails,
+      };
+    });
+
+    return NextResponse.json({ result: combinedData });
   } catch (error) {
-    console.error('Portfolio fetch error:', error);
+    console.error('API call error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch portfolio data' },
+      { error: 'Failed to fetch data' },
       { status: 500 }
     );
   }
