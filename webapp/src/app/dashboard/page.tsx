@@ -588,15 +588,16 @@ export default function Component() {
                             </div>
                             <div className="text-right">
                               <p className="font-medium">{Math.floor(asset.value_usd)}</p>
-                              {/* <p
+                              <p
                                 className={`text-sm ${
-                                  asset.priceChange.startsWith("+")
+                                  asset.value_usd === 0 ? "text-muted-foreground" :
+                                  (asset.abs_profit_usd / (asset.value_usd - asset.abs_profit_usd)) >= 0
                                     ? "text-blue-500"
                                     : "text-red-500"
                                 }`}
                               >
-                                {asset.priceChange}
-                              </p> */}
+                                {asset.value_usd === 0 ? "0" : ((asset.abs_profit_usd / (asset.value_usd - asset.abs_profit_usd)) * 100).toFixed(2)}%
+                              </p>
                             </div>
                           </div>
                             <div className="text-sm text-muted-foreground">
