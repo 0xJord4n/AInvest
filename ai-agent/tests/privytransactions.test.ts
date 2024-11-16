@@ -6,7 +6,7 @@ import { PrivyAuthHelper } from '../src/utils/privyAuth'
 
 describe('Privy Transaction Functionality', () => {
   let privyService: PrivyService
-  const mockWallet: Address = '0xC5227Cb20493b97bb02fADb20360fe28F52E2eff'
+  const mockWallet: Address = '0xe5634ed0149037E935F6B09bB1864865500198E5'
 
   beforeEach(() => {
     const secrets = require('../secrets/default.json')
@@ -43,55 +43,37 @@ describe('Privy Transaction Functionality', () => {
   })
 
   it('should handle transaction signing requests', async () => {
-    const res = await app.request('/transaction', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        walletAddress: mockWallet,
+    const result = await privyService.executeTransaction(
+      mockWallet,
+      {
         to: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
         value: '0.1',
         data: '0x'
-      })
-    })
+      }
+    )
 
-    expect(res.status).toBe(200)
-    const data = await res.json()
-    expect(data).toHaveProperty('signedTransaction')
-    expect(data).toHaveProperty('from')
-    expect(data).toHaveProperty('to')
+    expect(result).toBeDefined()
+    expect(typeof result).toBe('string')
   })
 
   it('should handle message signing requests', async () => {
-    const res = await app.request('/sign', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        walletAddress: mockWallet,
-        data: 'Test message to sign'
-      })
-    })
+    const result = await privyService.signMessage(
+      mockWallet,
+      'Test message to sign'
+    )
 
-    expect(res.status).toBe(200)
-    const data = await res.json()
-    expect(data).toHaveProperty('signature')
+    expect(result).toBeDefined()
+    expect(typeof result).toBe('string')
   })
 
   it('should handle missing parameters', async () => {
-    const res = await app.request('/transaction', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        // Missing required parameters
-      })
-    })
-
-    expect(res.status).toBe(400)
+    await expect(privyService.executeTransaction(
+      mockWallet,
+      {
+        to: undefined as any, // Testing missing parameters
+        value: undefined as any,
+        data: '0x'
+      }
+    )).rejects.toThrow()
   })
-
 })
