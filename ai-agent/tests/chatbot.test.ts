@@ -15,7 +15,7 @@ describe("Chatbot Functionality", () => {
       },
       body: JSON.stringify({
         message: "What is the current market sentiment?",
-        model: "gpt-4o",
+        model: "anthropic/claude-3.5-sonnet:beta",
       }),
     });
 

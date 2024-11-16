@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
+    "@lottiefiles/react-lottie-player": "^3.5.4",
     "@privy-io/react-auth": "^1.94.2",
+    "@privy-io/server-auth": "^1.16.3",
     "@pushprotocol/restapi": "^1.7.29",
     "@radix-ui/react-avatar": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.2",
@@ -36,12 +38,16 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
+    "react-markdown": "^9.0.1",
     "react-radio-group": "^3.0.3",
     "react-spring": "^9.7.4",
     "react-swipeable": "^7.0.2",
+    "react-syntax-highlighter": "^15.6.1",
     "recharts": "^2.13.3",
+    "remark-gfm": "^4.0.0",
     "tailwind-merge": "^2.5.4",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "viem": "^2.21.45"
   },
   "devDependencies": {
     "@types/node": "^20",

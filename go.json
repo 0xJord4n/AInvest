@@ -1,0 +1,76 @@
+{
+  "result": [
+    {
+      "chain_id": 8453,
+      "contract_address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "amount": 1.4726078796904039,
+      "price_to_usd": 3179.1323463696826,
+      "value_usd": 4681.615343842637,
+      "abs_profit_usd": 631.7434327037872,
+      "roi": 0.05910061322162908,
+      "status": 1,
+      "tokenDetails": {
+        "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "chainId": 8453,
+        "decimals": 18,
+        "name": "Ether",
+        "symbol": "ETH",
+        "providers": ["1inch", "Curve Token List"],
+        "logoURI": "https://tokens.1inch.io/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png",
+        "eip2612": false,
+        "tags": ["crosschain", "GROUP:ETH", "native", "PEG:ETH"],
+        "rating": 2
+      }
+    },
+    {
+      "chain_id": 8453,
+      "contract_address": "0x4200000000000000000000000000000000000006",
+      "amount": 0,
+      "price_to_usd": 3179.1323463696826,
+      "value_usd": 0,
+      "abs_profit_usd": -9.760849278513888,
+      "roi": -0.04675302954936937,
+      "status": 0,
+      "tokenDetails": {
+        "address": "0x4200000000000000000000000000000000000006",
+        "chainId": 8453,
+        "decimals": 18,
+        "name": "Wrapped Ether",
+        "symbol": "WETH",
+        "providers": [
+          "1inch",
+          "CoinGecko",
+          "Curve Token List",
+          "Kleros Tokens",
+          "Uniswap Labs Default"
+        ],
+        "logoURI": "https://tokens.1inch.io/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+        "eip2612": false,
+        "tags": ["crosschain", "GROUP:WETH", "PEG:ETH", "tokens"],
+        "rating": 5
+      }
+    },
+    {
+      "chain_id": 8453,
+      "contract_address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+      "amount": 0,
+      "price_to_usd": 1,
+      "value_usd": 0,
+      "abs_profit_usd": 1.9039295573033996,
+      "roi": 0.000747418256388604,
+      "status": 0,
+      "tokenDetails": {
+        "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+        "chainId": 8453,
+        "decimals": 6,
+        "name": "USD Coin",
+        "symbol": "USDC",
+        "providers": ["1inch", "Kleros Tokens", "Uniswap Labs Default"],
+        "logoURI": "https://tokens.1inch.io/0x833589fcd6edb6e08f4c7c32d4f71b54bda02913.png",
+        "eip2612": true,
+        "tags": ["crosschain", "GROUP:USDC", "PEG:USD", "tokens"],
+        "rating": 3
+      }
+    }
+  ]
+}

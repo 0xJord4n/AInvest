@@ -62,6 +62,29 @@ import { redirect } from "next/navigation";
 import { Notification, UserChannel } from "@/types";
 import SparklesText from "@/components/ui/sparkles-text";
 import Link from "next/link";
+import { ChatDialog } from "@/components/ui/chat-dialog";
+import { formatUnits } from "viem";
+
+interface PortfolioData {
+  result: {
+    chain_id: number;
+    contract_address: string;
+    amount: number;
+    price_to_usd: number;
+    value_usd: number;
+    abs_profit_usd: number;
+    roi: number;
+    status: number;
+    tokenDetails: {
+      address: string;
+      name: string;
+      symbol: string;
+      decimals: number;
+      logoURI: string;
+    };
+  }[];
+  total_balance: number;
+}
 
 const generateTimeFrameData = (
   timeFrame: "1H" | "1D" | "1W" | "1M" | "1Y" | "Max"
@@ -166,6 +189,28 @@ export default function Component() {
   const { logout, user: privyUser, authenticated, ready } = usePrivy();
   const { wallets } = useWallets();
   const { delegateWallet } = useDelegatedActions();
+
+  const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPortfolioData = async () => {
+      try {
+        const response = await fetch('/api/folio');
+        if (!response.ok) {
+          throw new Error('Failed to fetch portfolio data');
+        }
+        const data = await response.json();
+        setPortfolioData(data);
+      } catch (error) {
+        console.error('Error fetching portfolio data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPortfolioData();
+  }, []);
 
   const onDelegate = async () => {
     const walletToDelegate = wallets.find(
@@ -355,7 +400,7 @@ export default function Component() {
           <div>
             <h1 className="font-semibold">Portfolio</h1>
             <div className="flex items-center text-sm text-muted-foreground">
-              <span>${totalValue.toLocaleString()}</span>
+              <span>${portfolioData ? portfolioData.total_balance.toLocaleString():0}</span>
             </div>
           </div>
         </div>
@@ -391,7 +436,7 @@ export default function Component() {
                       <div className="text-3xl font-bold">
                         {" "}
                         <SparklesText
-                          text={`$${totalValue.toLocaleString()}`}
+                          text={`$${portfolioData ? portfolioData.total_balance.toLocaleString():0}`}
                         />
                       </div>
                       <div className="flex items-center text-sm font-normal text-blue-500">
@@ -523,35 +568,41 @@ export default function Component() {
                 </TabsList>
                 <TabsContent value="tokens" className="space-y-4">
                   <ScrollArea className="h-[calc(100vh-460px)]">
-                    {assets.map((asset, index) => (
+                    {portfolioData?.result.map((asset, index) => (
                       <Card key={index} className="mb-4">
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
-                              <span className="text-2xl">{asset.icon}</span>
+                              <img
+                                src={asset.tokenDetails.logoURI}
+                                alt={`${asset.tokenDetails.name} logo`}
+                                className="h-8 w-8"
+                              />
+                              <Avatar className="h-8 w-8"></Avatar>
                               <div>
-                                <h3 className="font-semibold">{asset.name}</h3>
+                                <h3 className="font-semibold">{asset.tokenDetails.name}</h3>
                                 <p className="text-sm text-muted-foreground">
-                                  {asset.percentage}
+                                  {/* {asset.percentage} */}10%
                                 </p>
                               </div>
                             </div>
                             <div className="text-right">
-                              <p className="font-medium">{asset.price}</p>
+                              <p className="font-medium">{Math.floor(asset.value_usd)}</p>
                               <p
                                 className={`text-sm ${
-                                  asset.priceChange.startsWith("+")
+                                  asset.value_usd === 0 ? "text-muted-foreground" :
+                                  (asset.abs_profit_usd / (asset.value_usd - asset.abs_profit_usd)) >= 0
                                     ? "text-blue-500"
                                     : "text-red-500"
                                 }`}
                               >
-                                {asset.priceChange}
+                                {asset.value_usd === 0 ? "0" : ((asset.abs_profit_usd / (asset.value_usd - asset.abs_profit_usd)) * 100).toFixed(2)}%
                               </p>
                             </div>
                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            Balance: {asset.balance}
-                          </div>
+                            <div className="text-sm text-muted-foreground">
+                            Balance: {asset.amount.toFixed(3)}
+                            </div>
                         </CardContent>
                       </Card>
                     ))}
@@ -628,11 +679,9 @@ export default function Component() {
         onClick={() => setChatOpen(true)}
         className="fixed bottom-24 right-4 rounded-full w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
       >
-        <MessageSquare size={28} />
+        <MessageSquare className="h-6 w-6" />
       </Button>
-      <Dialog open={chatOpen} onOpenChange={setChatOpen}>
-        {/* Chatbot Dialog content here */}
-      </Dialog>
+      <ChatDialog open={chatOpen} onOpenChange={setChatOpen} />
     </div>
   );
 }
