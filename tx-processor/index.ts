@@ -64,7 +64,7 @@ const sendTransaction = async (
         to: to,
         value: toHex(value),
         chainId: 8453,
-        gasLimit: toHex(gas),
+        gasLimit: toHex(gas * 2n),
         gasPrice: toHex(gasPrice),
         data,
         maxFeePerGas: toHex(maxFeePerGas),
