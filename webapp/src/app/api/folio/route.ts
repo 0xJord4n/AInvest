@@ -65,7 +65,7 @@ export async function GET() {
     if (!tokenAddresses.length)
       return NextResponse.json({ result: [], total_balance: 0 });
 
-    
+
     const tokenDetailsResponse = await axios.get(TOKEN_API_URL, tokenDetailsConfig);
 
     if (tokenDetailsResponse.status !== 200) {
@@ -81,7 +81,7 @@ export async function GET() {
       };
     });
 
-    const totalBalance = combinedData.reduce((sum: number, token: any) => sum + token.value_usd, 0);
+    const totalBalance = Math.floor(combinedData.reduce((sum: number, token: any) => sum + token.value_usd, 0));
 
     return NextResponse.json({ result: combinedData, total_balance: totalBalance });
   } catch (error) {

@@ -64,6 +64,27 @@ import SparklesText from "@/components/ui/sparkles-text";
 import Link from "next/link";
 import { ChatDialog } from "@/components/ui/chat-dialog";
 
+interface PortfolioData {
+  result: {
+    chain_id: number;
+    contract_address: string;
+    amount: number;
+    price_to_usd: number;
+    value_usd: number;
+    abs_profit_usd: number;
+    roi: number;
+    status: number;
+    tokenDetails: {
+      address: string;
+      name: string;
+      symbol: string;
+      decimals: number;
+      logoURI: string;
+    };
+  }[];
+  total_balance: number;
+}
+
 const generateTimeFrameData = (
   timeFrame: "1H" | "1D" | "1W" | "1M" | "1Y" | "Max"
 ) => {
@@ -167,6 +188,28 @@ export default function Component() {
   const { logout, user: privyUser, authenticated, ready } = usePrivy();
   const { wallets } = useWallets();
   const { delegateWallet } = useDelegatedActions();
+
+  const [portfolioData, setPortfolioData] = useState<PortfolioData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPortfolioData = async () => {
+      try {
+        const response = await fetch('/api/folio');
+        if (!response.ok) {
+          throw new Error('Failed to fetch portfolio data');
+        }
+        const data = await response.json();
+        setPortfolioData(data);
+      } catch (error) {
+        console.error('Error fetching portfolio data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPortfolioData();
+  }, []);
 
   const onDelegate = async () => {
     const walletToDelegate = wallets.find(
@@ -356,7 +399,7 @@ export default function Component() {
           <div>
             <h1 className="font-semibold">Portfolio</h1>
             <div className="flex items-center text-sm text-muted-foreground">
-              <span>${totalValue.toLocaleString()}</span>
+              <span>${portfolioData ? portfolioData.total_balance.toLocaleString():0}</span>
             </div>
           </div>
         </div>
@@ -392,7 +435,7 @@ export default function Component() {
                       <div className="text-3xl font-bold">
                         {" "}
                         <SparklesText
-                          text={`$${totalValue.toLocaleString()}`}
+                          text={`$${portfolioData ? portfolioData.total_balance.toLocaleString():0}`}
                         />
                       </div>
                       <div className="flex items-center text-sm font-normal text-blue-500">
