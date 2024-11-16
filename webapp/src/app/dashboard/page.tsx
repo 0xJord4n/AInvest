@@ -63,6 +63,7 @@ import { Notification, UserChannel } from "@/types";
 import SparklesText from "@/components/ui/sparkles-text";
 import Link from "next/link";
 import { ChatDialog } from "@/components/ui/chat-dialog";
+import { formatUnits } from "viem";
 
 interface PortfolioData {
   result: {
@@ -567,22 +568,27 @@ export default function Component() {
                 </TabsList>
                 <TabsContent value="tokens" className="space-y-4">
                   <ScrollArea className="h-[calc(100vh-460px)]">
-                    {assets.map((asset, index) => (
+                    {portfolioData?.result.map((asset, index) => (
                       <Card key={index} className="mb-4">
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
-                              <span className="text-2xl">{asset.icon}</span>
+                              <img
+                                src={asset.tokenDetails.logoURI}
+                                alt={`${asset.tokenDetails.name} logo`}
+                                className="h-8 w-8"
+                              />
+                              <Avatar className="h-8 w-8"></Avatar>
                               <div>
-                                <h3 className="font-semibold">{asset.name}</h3>
+                                <h3 className="font-semibold">{asset.tokenDetails.name}</h3>
                                 <p className="text-sm text-muted-foreground">
-                                  {asset.percentage}
+                                  {/* {asset.percentage} */}10%
                                 </p>
                               </div>
                             </div>
                             <div className="text-right">
-                              <p className="font-medium">{asset.price}</p>
-                              <p
+                              <p className="font-medium">{Math.floor(asset.value_usd)}</p>
+                              {/* <p
                                 className={`text-sm ${
                                   asset.priceChange.startsWith("+")
                                     ? "text-blue-500"
@@ -590,12 +596,12 @@ export default function Component() {
                                 }`}
                               >
                                 {asset.priceChange}
-                              </p>
+                              </p> */}
                             </div>
                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            Balance: {asset.balance}
-                          </div>
+                            <div className="text-sm text-muted-foreground">
+                            Balance: {asset.amount.toFixed(3)}
+                            </div>
                         </CardContent>
                       </Card>
                     ))}
