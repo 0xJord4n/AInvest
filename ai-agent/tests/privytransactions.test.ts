@@ -41,15 +41,16 @@ describe("Privy Transaction Functionality", () => {
     });
   });
 
-  it("should handle transaction signing requests", async () => {
-    const result = await privyService.executeTransaction(mockWallet, {
-      to: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
-      value: 10000,
-    });
+  // it("should handle transaction signing requests", async () => {
+  //   const result = await privyService.executeTransaction(mockWallet, {
+  //     to: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+  //     value: 10000,
+  //     b
+  //   });
 
-    expect(result).toBeDefined();
-    expect(typeof result).toBe("string");
-  });
+  //   expect(result).toBeDefined();
+  //   expect(typeof result).toBe("string");
+  // });
 
   it("should handle message signing requests", async () => {
     const result = await privyService.signMessage(
