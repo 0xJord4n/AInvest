@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
     "@privy-io/react-auth": "^1.94.2",
     "@pushprotocol/restapi": "^1.7.29",
     "@radix-ui/react-avatar": "^1.1.1",
